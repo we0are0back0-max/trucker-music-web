@@ -3,60 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trucker Music Player</title>
+    <title>Aesthetic Music Player</title>
     <style>
-        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #222; font-family: sans-serif; }
-        .player-container { width: 250px; text-align: center; color: white; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 15px; }
-        .cover-art { width: 200px; height: 200px; border-radius: 10px; object-fit: cover; }
-        h2 { font-size: 16px; margin: 15px 0; }
-        button { padding: 10px 20px; cursor: pointer; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            touch-action: none;
+            
+            background-image: url('https://cdn.jsdelivr.net/gh/we0are0back0-max/trucker-music-web@main/64e285ad54fd721bc64723753da45c98.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #1a1a1a;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            z-index: 1;
+        }
+
+        .player-container {
+            width: 210px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-art {
+            width: 210px;
+            height: 210px;
+            object-fit: cover;
+            margin-bottom: 12px;
+            border-radius: 2px;
+            pointer-events: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .song-title {
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            letter-spacing: 0.3px;
+        }
+
+        .top-action-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 2px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            outline: none;
+        }
+
+        .progress-wrapper {
+            width: 100%;
+            margin-bottom: 15px;
+            touch-action: auto;
+        }
+
+        .progress-bar {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 1px;
+            background: #1a1a1a;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .progress-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .time-stamps {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            font-weight: 600;
+            margin-top: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .controls-row {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .play-pause-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            cursor: pointer;
+            outline: none;
+        }
+
+        svg {
+            fill: currentColor;
+        }
     </style>
 </head>
 <body>
 
     <div class="player-container">
+        <!-- Compact Square Cover Photo -->
         <img id="cover" class="cover-art" src="" alt="Cover">
-        <h2 id="song-name">Song Name</h2>
+
+        <!-- Song Name Display -->
+        <div class="song-title" id="song-name">Loading...</div>
+
+        <!-- Top Icons Bar -->
+        <div class="top-action-bar">
+            <button class="icon-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </button>
+            <button class="icon-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="5" cy="12" r="1.5"/>
+                    <circle cx="12" cy="12" r="1.5"/>
+                    <circle cx="19" cy="12" r="1.5"/>
+                </svg>
+            </button>
+        </div>
+
         <audio id="audio"></audio>
-        <div class="controls">
-            <button onclick="prevSong()">⏮️</button>
-            <button id="play-btn" onclick="togglePlay()">⏯️</button>
-            <button onclick="nextSong()">⏭️</button>
+
+        <!-- Timeline / Progress -->
+        <div class="progress-wrapper">
+            <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100">
+            <div class="time-stamps">
+                <span id="current-time">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="controls-row">
+            <!-- Shuffle -->
+            <button class="icon-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
+                </svg>
+            </button>
+
+            <!-- Previous -->
+            <button class="icon-btn" id="prev">
+                <svg width="14" height="14" viewBox="0 0 24 24">
+                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                </svg>
+            </button>
+
+            <!-- Play / Pause -->
+            <button class="play-pause-circle" id="play-btn">
+                <svg id="play-icon" width="14" height="14" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+                <svg id="pause-icon" width="14" height="14" viewBox="0 0 24 24" style="display:none;">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                </svg>
+            </button>
+
+            <!-- Next -->
+            <button class="icon-btn" id="next">
+                <svg width="14" height="14" viewBox="0 0 24 24">
+                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                </svg>
+            </button>
+
+            <!-- Repeat -->
+            <button class="icon-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 2l4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3"/>
+                </svg>
+            </button>
         </div>
     </div>
 
-    <!-- YAHAN DATA.JS CONNECT KIYA HAI -->
+    <!-- DATA.JS LINKED -->
     <script src="data.js"></script>
 
     <script>
         const audio = document.getElementById('audio');
-        const songName = document.getElementById('song-name');
-        const cover = document.getElementById('cover');
-        let index = 0;
+        const playBtn = document.getElementById('play-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const nextBtn = document.getElementById('next');
+        const prevBtn = document.getElementById('prev');
+        const songNameEl = document.getElementById('song-name');
+        const coverEl = document.getElementById('cover');
 
-        function loadSong(i) {
-            songName.innerText = myPlaylist[i].name;
-            audio.src = myPlaylist[i].audio;
-            cover.src = myPlaylist[i].cover;
+        let currentSongIndex = 0;
+        let isPlaying = false;
+
+        function loadSong(index) {
+            const currentSong = myPlaylist[index];
+            songNameEl.innerText = currentSong.name;
+            coverEl.src = currentSong.cover;
+            audio.src = currentSong.audio;
+            audio.load();
         }
+
+        loadSong(currentSongIndex);
 
         function togglePlay() {
-            audio.paused ? audio.play() : audio.pause();
+            if (isPlaying) {
+                audio.pause();
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+            } else {
+                audio.play();
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+            }
+            isPlaying = !isPlaying;
         }
 
-        function nextSong() {
-            index = (index + 1) % myPlaylist.length;
-            loadSong(index);
-            audio.play();
-        }
+        playBtn.addEventListener('click', togglePlay);
 
-        function prevSong() {
-            index = (index - 1 + myPlaylist.length) % myPlaylist.length;
-            loadSong(index);
-            audio.play();
-        }
+        nextBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex + 1) % myPlaylist.length;
+            loadSong(currentSongIndex);
+            if (isPlaying) audio.play();
+        });
 
-        loadSong(index);
+        prevBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex - 1 + myPlaylist.length) % myPlaylist.length;
+            loadSong(currentSongIndex);
+            if (isPlaying) audio.play();
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const progressPercent = (audio.currentTime / audio.duration) * 100;
+                progress.value = progressPercent;
+
+                let curMins = Math.floor(audio.currentTime / 60);
+                let curSecs = Math.floor(audio.currentTime % 60);
+                if (curSecs < 10) curSecs = '0' + curSecs;
+                currentTimeEl.innerText = `${curMins}:${curSecs}`;
+
+                let durMins = Math.floor(audio.duration / 60);
+                let durSecs = Math.floor(audio.duration % 60);
+                if (durSecs < 10) durSecs = '0' + durSecs;
+                durationEl.innerText = `${durMins}:${durSecs}`;
+            }
+        });
+
+        progress.addEventListener('input', () => {
+            const seekTime = (progress.value / 100) * audio.duration;
+            audio.currentTime = seekTime;
+        });
+
+        audio.addEventListener('ended', () => {
+            nextBtn.click();
+        });
     </script>
 </body>
 </html>
