@@ -1,11 +1,168 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
-    <title>Trucker Music</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trucker Music Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .player-card {
+            background: #1e1e1e;
+            width: 100%;
+            max-width: 350px;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #2a2a2a;
+        }
+        .cover-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .song-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        .artist-name {
+            font-size: 14px;
+            color: #b3b3b3;
+            margin-bottom: 20px;
+        }
+        .progress-container {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            width: 100%;
+            accent-color: #1db954;
+            cursor: pointer;
+        }
+        .time-stamps {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #b3b3b3;
+            margin-top: 5px;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        .btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-play {
+            background: #1db954;
+            color: #000;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 26px;
+        }
+        .btn:active {
+            transform: scale(0.9);
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Trucker Music App!</h1>
-    <p>Website live ho gayi hai.</p>
+
+    <div class="player-card">
+        <img id="cover" class="cover-img" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500" alt="Album Cover">
+        
+        <div id="title" class="song-title">Demo Trucker Song</div>
+        <div id="artist" class="artist-name">Unknown Artist</div>
+
+        <audio id="audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
+        <div class="progress-container">
+            <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100">
+            <div class="time-stamps">
+                <span id="current-time">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="prev">⏮</button>
+            <button class="btn btn-play" id="play-btn">▶</button>
+            <button class="btn" id="next">⏭</button>
+        </div>
+    </div>
+
+    <script>
+        const audio = document.getElementById('audio');
+        const playBtn = document.getElementById('play-btn');
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+
+        let isPlaying = false;
+
+        function togglePlay() {
+            if (isPlaying) {
+                audio.pause();
+                playBtn.innerText = '▶';
+            } else {
+                audio.play();
+                playBtn.innerText = '⏸';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        playBtn.addEventListener('click', togglePlay);
+
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const progressPercent = (audio.currentTime / audio.duration) * 100;
+                progress.value = progressPercent;
+
+                let curMins = Math.floor(audio.currentTime / 60);
+                let curSecs = Math.floor(audio.currentTime % 60);
+                if (curSecs < 10) curSecs = '0' + curSecs;
+                currentTimeEl.innerText = `${curMins}:${curSecs}`;
+
+                let durMins = Math.floor(audio.duration / 60);
+                let durSecs = Math.floor(audio.duration % 60);
+                if (durSecs < 10) durSecs = '0' + durSecs;
+                durationEl.innerText = `${durMins}:${durSecs}`;
+            }
+        });
+
+        progress.addEventListener('input', () => {
+            const seekTime = (progress.value / 100) * audio.duration;
+            audio.currentTime = seekTime;
+        });
+    </script>
 </body>
 </html>
-
