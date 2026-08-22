@@ -12,7 +12,7 @@
             background-color: #000;
             background-image: url('https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg');
             background-size: cover; background-position: center; background-repeat: no-repeat;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: sans-serif;
             color: #fff;
         }
 
@@ -23,71 +23,55 @@
             text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
 
-        /* Slim, Transparent, Blurred Container */
+        /* Support ID Button */
+        .support-btn { position: absolute; top: 40px; left: 5%; z-index: 10; }
+        .support-btn a { color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0.9; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+
+        /* Left Action Boxes */
+        .actions-container {
+            position: absolute; top: 120px; left: 15px;
+            display: flex; flex-direction: column; gap: 20px; z-index: 10;
+        }
+        .action-box {
+            display: flex; flex-direction: column; align-items: center; width: 80px;
+        }
+        .action-img {
+            width: 60px; height: 60px; border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.3); object-fit: cover;
+            margin-bottom: 5px;
+        }
+        .action-label {
+            background: rgba(255, 255, 255, 0.3); /* Half Transparent White */
+            backdrop-filter: blur(5px);
+            padding: 4px 8px; border-radius: 6px; font-size: 9px;
+            text-align: center; font-weight: 600; width: 100%;
+        }
+        .action-label a { color: #fff; text-decoration: none; display: block; }
+
+        /* Player Wrapper */
         .player-wrapper {
-            position: absolute;
-            bottom: 25px; 
-            left: 50%;
-            transform: translateX(-50%);
-            width: 92%;
-            max-width: 420px;
-            z-index: 10;
+            position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
+            width: 92%; max-width: 420px; z-index: 10;
         }
-
         .player-card {
-            background: rgba(0, 0, 0, 0.5); /* 50% Transparency */
-            backdrop-filter: blur(10px);    /* Blur Effect */
-            border: 1px solid rgba(255, 255, 255, 0.4); /* Sharp white outline */
-            border-radius: 20px;
-            padding: 10px 18px; /* Slimmer Padding */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 20px; padding: 10px 18px;
         }
-
-        .top-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-
-        /* CD Art (Slightly smaller to fit slim box) */
-        .cd-art {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid rgba(255,255,255,0.3);
-            animation: spin 8s linear infinite;
-            animation-play-state: paused;
-        }
-
+        /* ... (Keep existing player styles) ... */
+        .top-section { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .cd-art { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.3); animation: spin 8s linear infinite; animation-play-state: paused; }
         .cd-art.playing { animation-play-state: running; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-
         .song-details { flex: 1; overflow: hidden; }
         .song-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .artist-name { font-size: 11px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* Progress Bar (Slimmer) */
         .progress-container { width: 100%; margin-bottom: 8px; }
-        .progress-bar {
-            -webkit-appearance: none; width: 100%; height: 2px; background: rgba(255, 255, 255, 0.3);
-            outline: none; cursor: pointer; border-radius: 2px;
-        }
+        .progress-bar { -webkit-appearance: none; width: 100%; height: 2px; background: rgba(255, 255, 255, 0.3); outline: none; border-radius: 2px; }
         .progress-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
         .time-stamps { display: flex; font-size: 9px; margin-top: 4px; color: #bbb; }
-
-        /* Controls */
         .controls-row { display: flex; justify-content: space-between; align-items: center; }
         .icon-btn { background: none; border: none; cursor: pointer; color: #fff; opacity: 0.85; padding: 5px; }
-        .icon-btn.active { color: #1db954; }
-        .play-pause-circle {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: #fff; color: #000; border: none;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        /* Playlist Modal */
+        .play-pause-circle { width: 40px; height: 40px; border-radius: 50%; background: #fff; color: #000; border: none; display: flex; align-items: center; justify-content: center; }
         .playlist-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 100; display: none; flex-direction: column; padding: 20px; }
         .search-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff; margin-bottom: 15px; }
         .song-list { flex: 1; overflow-y: auto; }
@@ -102,9 +86,27 @@
         <div id="clock">00:00</div>
         <div id="live-users">Live: 750</div>
     </div>
-    <!-- Support ID Button -->
-    <div style="position: absolute; top: 40px; left: 5%; z-index: 10;">
-        <a href="https://www.instagram.com/shiva_008i?igsi=MWFmc2VxanJ3NHJyNQ==" target="_blank" style="color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0.9; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">Support ID</a>
+    
+    <div class="support-btn">
+        <a href="https://www.instagram.com/shiva_008i?igsi=MWFmc2VxanJ3NHJyNQ==" target="_blank">Support ID</a>
+    </div>
+
+    <!-- New Action Boxes -->
+    <div class="actions-container">
+        <!-- Dhaba Box -->
+        <div class="action-box">
+            <img src="dhaba.jpg" class="action-img" alt="Dhaba" onerror="this.style.display='none'">
+            <div class="action-label">
+                <a href="https://www.google.com/maps/search/dhabas+near+me" target="_blank">नजदीकी चाय-पानी / Dhaba</a>
+            </div>
+        </div>
+        <!-- Pump Box -->
+        <div class="action-box">
+            <img src="fule.jpg" class="action-img" alt="Fuel" onerror="this.style.display='none'">
+            <div class="action-label">
+                <a href="https://www.google.com/maps/search/diesel+pump+near+me" target="_blank">नजदीकी diesel Pump</a>
+            </div>
+        </div>
     </div>
 
     <div class="player-wrapper">
@@ -147,47 +149,14 @@
     <script>
         function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
         setInterval(updateClock, 1000); updateClock();
-
         const audio = document.getElementById('audio'), playBtn = document.getElementById('play-btn'), playIcon = document.getElementById('play-icon'), pauseIcon = document.getElementById('pause-icon'), progress = document.getElementById('progress'), currentTimeEl = document.getElementById('current-time'), durationEl = document.getElementById('duration'), nextBtn = document.getElementById('next'), prevBtn = document.getElementById('prev'), shuffleBtn = document.getElementById('shuffle-btn'), songNameEl = document.getElementById('song-name'), artistNameEl = document.getElementById('artist-name'), cdDisc = document.getElementById('cd-disc');
-
         let currentSongIndex = 0, isPlaying = false, isShuffle = false;
-
-        function loadSong(index) {
-            const currentSong = myPlaylist[index];
-            songNameEl.innerText = currentSong.name; artistNameEl.innerText = currentSong.artist;
-            audio.src = currentSong.audio; audio.load(); renderPlaylist();
-        }
-
-        function togglePlay() {
-            if (isPlaying) { audio.pause(); playIcon.style.display = 'block'; pauseIcon.style.display = 'none'; cdDisc.classList.remove('playing'); } 
-            else { audio.play(); playIcon.style.display = 'none'; pauseIcon.style.display = 'block'; cdDisc.classList.add('playing'); }
-            isPlaying = !isPlaying;
-        }
-
-        playBtn.addEventListener('click', togglePlay);
-        nextBtn.addEventListener('click', () => { currentSongIndex = isShuffle ? Math.floor(Math.random() * myPlaylist.length) : (currentSongIndex + 1) % myPlaylist.length; loadSong(currentSongIndex); if(isPlaying) audio.play(); });
-        prevBtn.addEventListener('click', () => { currentSongIndex = (currentSongIndex - 1 + myPlaylist.length) % myPlaylist.length; loadSong(currentSongIndex); if(isPlaying) audio.play(); });
-        shuffleBtn.addEventListener('click', () => { isShuffle = !isShuffle; shuffleBtn.classList.toggle('active', isShuffle); });
-        audio.addEventListener('timeupdate', () => {
-            if(audio.duration) { progress.value = (audio.currentTime/audio.duration)*100; let cM = Math.floor(audio.currentTime/60), cS = Math.floor(audio.currentTime%60), dM = Math.floor(audio.duration/60), dS = Math.floor(audio.duration%60); currentTimeEl.innerText = `${cM}:${cS<10?'0'+cS:cS}`; durationEl.innerText = `${dM}:${dS<10?'0'+dS:dS}`; }
-        });
-        progress.addEventListener('input', () => audio.currentTime = (progress.value/100)*audio.duration);
-        audio.addEventListener('ended', () => nextBtn.click());
-
+        function loadSong(index) { const currentSong = myPlaylist[index]; songNameEl.innerText = currentSong.name; artistNameEl.innerText = currentSong.artist; audio.src = currentSong.audio; audio.load(); renderPlaylist(); }
+        function togglePlay() { if (isPlaying) { audio.pause(); playIcon.style.display = 'block'; pauseIcon.style.display = 'none'; cdDisc.classList.remove('playing'); } else { audio.play(); playIcon.style.display = 'none'; pauseIcon.style.display = 'block'; cdDisc.classList.add('playing'); } isPlaying = !isPlaying; }
+        playBtn.addEventListener('click', togglePlay); nextBtn.addEventListener('click', () => { currentSongIndex = isShuffle ? Math.floor(Math.random() * myPlaylist.length) : (currentSongIndex + 1) % myPlaylist.length; loadSong(currentSongIndex); if(isPlaying) audio.play(); }); prevBtn.addEventListener('click', () => { currentSongIndex = (currentSongIndex - 1 + myPlaylist.length) % myPlaylist.length; loadSong(currentSongIndex); if(isPlaying) audio.play(); }); shuffleBtn.addEventListener('click', () => { isShuffle = !isShuffle; shuffleBtn.classList.toggle('active', isShuffle); }); audio.addEventListener('timeupdate', () => { if(audio.duration) { progress.value = (audio.currentTime/audio.duration)*100; let cM = Math.floor(audio.currentTime/60), cS = Math.floor(audio.currentTime%60), dM = Math.floor(audio.duration/60), dS = Math.floor(audio.duration%60); currentTimeEl.innerText = `${cM}:${cS<10?'0'+cS:cS}`; durationEl.innerText = `${dM}:${dS<10?'0'+dS:dS}`; } }); progress.addEventListener('input', () => audio.currentTime = (progress.value/100)*audio.duration); audio.addEventListener('ended', () => nextBtn.click());
         const playlistModal = document.getElementById('playlist-modal'), playlistBtn = document.getElementById('playlist-btn'), closePlaylist = document.getElementById('close-playlist'), songListContainer = document.getElementById('song-list'), searchBar = document.getElementById('search-bar');
-        playlistBtn.addEventListener('click', () => playlistModal.style.display = 'flex');
-        closePlaylist.addEventListener('click', () => playlistModal.style.display = 'none');
-        function renderPlaylist(filter = '') {
-            songListContainer.innerHTML = '';
-            myPlaylist.forEach((song, index) => {
-                if(song.name.toLowerCase().includes(filter.toLowerCase())) {
-                    const item = document.createElement('div'); item.className = `song-item ${index===currentSongIndex?'active':''}`;
-                    item.innerHTML = `<div><strong>${song.name}</strong><br><small>${song.artist}</small></div>`;
-                    item.onclick = () => { currentSongIndex = index; loadSong(currentSongIndex); playlistModal.style.display='none'; if(!isPlaying) togglePlay(); else audio.play(); };
-                    songListContainer.appendChild(item);
-                }
-            });
-        }
+        playlistBtn.addEventListener('click', () => playlistModal.style.display = 'flex'); closePlaylist.addEventListener('click', () => playlistModal.style.display = 'none');
+        function renderPlaylist(filter = '') { songListContainer.innerHTML = ''; myPlaylist.forEach((song, index) => { if(song.name.toLowerCase().includes(filter.toLowerCase())) { const item = document.createElement('div'); item.className = `song-item ${index===currentSongIndex?'active':''}`; item.innerHTML = `<div><strong>${song.name}</strong><br><small>${song.artist}</small></div>`; item.onclick = () => { currentSongIndex = index; loadSong(currentSongIndex); playlistModal.style.display='none'; if(!isPlaying) togglePlay(); else audio.play(); }; songListContainer.appendChild(item); } }); }
         searchBar.addEventListener('input', (e) => renderPlaylist(e.target.value));
         if(typeof myPlaylist !== 'undefined') loadSong(currentSongIndex);
     </script>
