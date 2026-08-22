@@ -2,119 +2,191 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="manifest.json">
-    <title>Trucker Music</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trucker Music Player</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; font-family: sans-serif; color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; background-image: url('https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg'); background-size: cover; background-position: center; }
-        
-        .player-wrapper { width: 92%; max-width: 420px; z-index: 10; }
-        .player-card { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 20px; padding: 15px; }
-        
-        /* Visualizer */
-        canvas { width: 100%; height: 40px; margin-bottom: 10px; display: block; }
-        
-        .top-section { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-        .cd-art { width: 50px; height: 50px; border-radius: 50%; animation: spin 8s linear infinite; animation-play-state: paused; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body {
+            width: 100%; height: 100%; overflow: hidden; position: fixed;
+            background-color: #000;
+            background-image: url('https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg');
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #fff;
+        }
+
+        .info-bar {
+            position: absolute; top: 15px; width: 90%; left: 5%;
+            display: flex; justify-content: space-between;
+            font-size: 11px; font-weight: 700; z-index: 10; opacity: 0.9;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+
+        /* Slim, Transparent, Blurred Container */
+        .player-wrapper {
+            position: absolute;
+            bottom: 25px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            max-width: 420px;
+            z-index: 10;
+        }
+
+        .player-card {
+            background: rgba(0, 0, 0, 0.5); /* 50% Transparency */
+            backdrop-filter: blur(10px);    /* Blur Effect */
+            border: 1px solid rgba(255, 255, 255, 0.4); /* Sharp white outline */
+            border-radius: 20px;
+            padding: 10px 18px; /* Slimmer Padding */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        .top-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        /* CD Art (Slightly smaller to fit slim box) */
+        .cd-art {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.3);
+            animation: spin 8s linear infinite;
+            animation-play-state: paused;
+        }
+
         .cd-art.playing { animation-play-state: running; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        .progress-bar { width: 100%; height: 3px; accent-color: #fff; cursor: pointer; }
-        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .vol-slider { width: 60px; height: 3px; }
+        .song-details { flex: 1; overflow: hidden; }
+        .song-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .artist-name { font-size: 11px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Progress Bar (Slimmer) */
+        .progress-container { width: 100%; margin-bottom: 8px; }
+        .progress-bar {
+            -webkit-appearance: none; width: 100%; height: 2px; background: rgba(255, 255, 255, 0.3);
+            outline: none; cursor: pointer; border-radius: 2px;
+        }
+        .progress-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+        .time-stamps { display: flex; font-size: 9px; margin-top: 4px; color: #bbb; }
+
+        /* Controls */
+        .controls-row { display: flex; justify-content: space-between; align-items: center; }
+        .icon-btn { background: none; border: none; cursor: pointer; color: #fff; opacity: 0.85; padding: 5px; }
+        .icon-btn.active { color: #1db954; }
+        .play-pause-circle {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #fff; color: #000; border: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Playlist Modal */
+        .playlist-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 100; display: none; flex-direction: column; padding: 20px; }
+        .search-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff; margin-bottom: 15px; }
+        .song-list { flex: 1; overflow-y: auto; }
+        .song-item { padding: 10px; border-bottom: 1px solid #333; }
+        .song-item.active { background: #333; }
+        svg { fill: currentColor; }
     </style>
 </head>
 <body>
 
+    <div class="info-bar">
+        <div id="clock">00:00</div>
+        <div id="live-users">Live: 750</div>
+    </div>
+
     <div class="player-wrapper">
         <div class="player-card">
-            <canvas id="visualizer"></canvas>
             <div class="top-section">
                 <img id="cd-disc" class="cd-art" src="https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/cd.jpg" onerror="this.src='https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg'" alt="CD">
                 <div class="song-details">
-                    <div id="song-name" style="font-size: 14px; font-weight: bold;">Loading...</div>
+                    <div class="song-title" id="song-name">Loading...</div>
+                    <div class="artist-name" id="artist-name">Artist</div>
                 </div>
             </div>
             <audio id="audio"></audio>
-            <input type="range" id="progress" class="progress-bar" value="0">
+            <div class="progress-container">
+                <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100">
+                <div class="time-stamps"><span id="current-time">0:00</span>&nbsp;/&nbsp;<span id="duration">0:00</span></div>
+            </div>
             <div class="controls-row">
-                <input type="range" id="volume" class="vol-slider" min="0" max="1" step="0.1" value="1">
-                <button id="play-btn" style="background:#fff; border-radius:50%; width:40px; height:40px; border:none; cursor:pointer;">Play</button>
-                <button id="next-btn" style="background:none; color:#fff; border:none; cursor:pointer;">Next</button>
+                <button class="icon-btn" id="shuffle-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></button>
+                <button class="icon-btn" id="prev"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+                <button class="play-pause-circle" id="play-btn">
+                    <svg id="play-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg id="pause-icon" width="16" height="16" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <button class="icon-btn" id="next"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+                <button class="icon-btn" id="playlist-btn"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h11v2H4z"/></svg></button>
             </div>
         </div>
     </div>
 
-    <!-- PWA Install Popup -->
-    <div id="install-popup" style="display:none; position:fixed; bottom:20px; background:#fff; color:#000; padding:15px; border-radius:10px; z-index:999;">
-        Install App for better experience! <button onclick="installApp()">Install</button>
+    <div class="playlist-modal" id="playlist-modal">
+        <div class="playlist-header" style="display:flex; justify-content:space-between; margin-bottom:15px;">
+            <h3>Playlist</h3>
+            <button class="icon-btn" id="close-playlist">✕</button>
+        </div>
+        <input type="text" id="search-bar" class="search-input" placeholder="Search...">
+        <div class="song-list" id="song-list"></div>
     </div>
 
     <script src="data.js"></script>
     <script>
-        const audio = document.getElementById('audio'), cd = document.getElementById('cd-disc'), playBtn = document.getElementById('play-btn');
-        let currentSongIndex = localStorage.getItem('lastIndex') || 0;
-        
-        // Load Memory
-        window.onload = () => {
-            loadSong(currentSongIndex);
-            // PWA Popup logic
-            if (!localStorage.getItem('isInstalledPopUpShown')) {
-                document.getElementById('install-popup').style.display = 'block';
-                localStorage.setItem('isInstalledPopUpShown', 'true');
-            }
-        };
+        // Clock, Live Users, Player Logic, Playlist Search (Exactly as before)
+        function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
+        setInterval(updateClock, 1000); updateClock();
+
+        const audio = document.getElementById('audio'), playBtn = document.getElementById('play-btn'), playIcon = document.getElementById('play-icon'), pauseIcon = document.getElementById('pause-icon'), progress = document.getElementById('progress'), currentTimeEl = document.getElementById('current-time'), durationEl = document.getElementById('duration'), nextBtn = document.getElementById('next'), prevBtn = document.getElementById('prev'), shuffleBtn = document.getElementById('shuffle-btn'), songNameEl = document.getElementById('song-name'), artistNameEl = document.getElementById('artist-name'), cdDisc = document.getElementById('cd-disc');
+
+        let currentSongIndex = 0, isPlaying = false, isShuffle = false;
 
         function loadSong(index) {
-            const song = myPlaylist[index];
-            audio.src = song.audio;
-            document.getElementById('song-name').innerText = song.name;
-            audio.currentTime = localStorage.getItem('lastTime') || 0;
-            currentSongIndex = index;
-            localStorage.setItem('lastIndex', index);
+            const currentSong = myPlaylist[index];
+            songNameEl.innerText = currentSong.name; artistNameEl.innerText = currentSong.artist;
+            audio.src = currentSong.audio; audio.load(); renderPlaylist();
         }
 
-        audio.ontimeupdate = () => {
-            localStorage.setItem('lastTime', audio.currentTime);
-            document.getElementById('progress').value = (audio.currentTime/audio.duration)*100;
-        };
-
-        playBtn.onclick = () => {
-            if(audio.paused) { audio.play(); cd.classList.add('playing'); setupVisualizer(); }
-            else { audio.pause(); cd.classList.remove('playing'); }
-        };
-
-        // Visualizer
-        let audioCtx, analyser;
-        function setupVisualizer() {
-            if(!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioCtx.createAnalyser();
-                let source = audioCtx.createMediaElementSource(audio);
-                source.connect(analyser);
-                analyser.connect(audioCtx.destination);
-                draw();
-            }
-        }
-        function draw() {
-            requestAnimationFrame(draw);
-            let canvas = document.getElementById('visualizer');
-            let ctx = canvas.getContext('2d');
-            let data = new Uint8Array(analyser.frequencyBinCount);
-            analyser.getByteFrequencyData(data);
-            ctx.clearRect(0,0, canvas.width, canvas.height);
-            ctx.fillStyle = '#fff';
-            for(let i=0; i<20; i++) { ctx.fillRect(i*10, 40-data[i]/5, 5, data[i]/5); }
+        function togglePlay() {
+            if (isPlaying) { audio.pause(); playIcon.style.display = 'block'; pauseIcon.style.display = 'none'; cdDisc.classList.remove('playing'); } 
+            else { audio.play(); playIcon.style.display = 'none'; pauseIcon.style.display = 'block'; cdDisc.classList.add('playing'); }
+            isPlaying = !isPlaying;
         }
 
-        // Volume
-        document.getElementById('volume').oninput = (e) => audio.volume = e.target.value;
+        playBtn.addEventListener('click', togglePlay);
+        nextBtn.addEventListener('click', () => { currentSongIndex = isShuffle ? Math.floor(Math.random() * myPlaylist.length) : (currentSongIndex + 1) % myPlaylist.length; loadSong(currentSongIndex); if(isPlaying) audio.play(); });
+        prevBtn.addEventListener('click', () => { currentSongIndex = (currentSongIndex - 1 + myPlaylist.length) % myPlaylist.length; loadSong(currentSongIndex); if(isPlaying) audio.play(); });
+        shuffleBtn.addEventListener('click', () => { isShuffle = !isShuffle; shuffleBtn.classList.toggle('active', isShuffle); });
+        audio.addEventListener('timeupdate', () => {
+            if(audio.duration) { progress.value = (audio.currentTime/audio.duration)*100; let cM = Math.floor(audio.currentTime/60), cS = Math.floor(audio.currentTime%60), dM = Math.floor(audio.duration/60), dS = Math.floor(audio.duration%60); currentTimeEl.innerText = `${cM}:${cS<10?'0'+cS:cS}`; durationEl.innerText = `${dM}:${dS<10?'0'+dS:dS}`; }
+        });
+        progress.addEventListener('input', () => audio.currentTime = (progress.value/100)*audio.duration);
+        audio.addEventListener('ended', () => nextBtn.click());
 
-        // PWA Install Prompt
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-        function installApp() { if(deferredPrompt) deferredPrompt.prompt(); }
+        const playlistModal = document.getElementById('playlist-modal'), playlistBtn = document.getElementById('playlist-btn'), closePlaylist = document.getElementById('close-playlist'), songListContainer = document.getElementById('song-list'), searchBar = document.getElementById('search-bar');
+        playlistBtn.addEventListener('click', () => playlistModal.style.display = 'flex');
+        closePlaylist.addEventListener('click', () => playlistModal.style.display = 'none');
+        function renderPlaylist(filter = '') {
+            songListContainer.innerHTML = '';
+            myPlaylist.forEach((song, index) => {
+                if(song.name.toLowerCase().includes(filter.toLowerCase())) {
+                    const item = document.createElement('div'); item.className = `song-item ${index===currentSongIndex?'active':''}`;
+                    item.innerHTML = `<div><strong>${song.name}</strong><br><small>${song.artist}</small></div>`;
+                    item.onclick = () => { currentSongIndex = index; loadSong(currentSongIndex); playlistModal.style.display='none'; if(!isPlaying) togglePlay(); else audio.play(); };
+                    songListContainer.appendChild(item);
+                }
+            });
+        }
+        searchBar.addEventListener('input', (e) => renderPlaylist(e.target.value));
+        if(typeof myPlaylist !== 'undefined') loadSong(currentSongIndex);
     </script>
 </body>
 </html>
