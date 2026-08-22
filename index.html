@@ -102,6 +102,10 @@
         <div id="clock">00:00</div>
         <div id="live-users">Live: 750</div>
     </div>
+    <!-- Support ID Button -->
+    <div style="position: absolute; top: 40px; left: 5%; z-index: 10;">
+        <a href="https://www.instagram.com/shiva_008i?igsi=MWFmc2VxanJ3NHJyNQ==" target="_blank" style="color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0.9; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">Support ID</a>
+    </div>
 
     <div class="player-wrapper">
         <div class="player-card">
@@ -141,7 +145,6 @@
 
     <script src="data.js"></script>
     <script>
-        // Clock, Live Users, Player Logic, Playlist Search (Exactly as before)
         function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
         setInterval(updateClock, 1000); updateClock();
 
