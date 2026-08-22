@@ -1,6 +1,6 @@
 const myPlaylist = [
     { name: "Hame Tumse Hua Hai Payar", artist: "Artist Name", audio: "song1.mp3", cover: "song1.jpg" },
-    { name: "....name ....", artist: "Artist Name", audio: "song2.mp3", cover: "song2.jpg" },
+    { name: "Pahli Pahli Bar Mahobbat Ki Hai", artist: "Artist Name", audio: "song2.mp3", cover: "song2.jpg" },
     { name: "....name ....", artist: "Artist Name", audio: "song3.mp3", cover: "song3.jpg" },
     { name: "....name ....", artist: "Artist Name", audio: "song4.mp3", cover: "song4.jpg" },
     { name: "....name ....", artist: "Artist Name", audio: "song5.mp3", cover: "song5.jpg" },
