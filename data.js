@@ -7,7 +7,7 @@ const myPlaylist = [
     { name: "Kyo kisi ko ( tere nam ) ", artist: "Artist Name", audio: "song6.mp3", cover: "song6.jpg" },
     { name: "Ek Dilruba Hai", artist: "Artist Name", audio: "song7.mp3", cover: "song7.jpg" },
     { name: "Dil Ke Badle Sanam", artist: "Artist Name", audio: "song8.mp3", cover: "song8.jpg" },
-    { name: "....name ....", artist: "Artist Name", audio: "song9.mp3", cover: "song9.jpg" },
+    { name: "Husan Hai Suhana ", artist: "Artist Name", audio: "song9.mp3", cover: "song9.jpg" },
     { name: "....name ....", artist: "Artist Name", audio: "song10.mp3", cover: "song10.jpg" },
     { name: "....name ....", artist: "Artist Name", audio: "song11.mp3", cover: "song11.jpg" },
     { name: "....name ....", artist: "Artist Name", audio: "song12.mp3", cover: "song12.jpg" },
