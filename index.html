@@ -10,7 +10,7 @@
         html, body {
             width: 100%; height: 100%; overflow: hidden; position: fixed;
             background-color: #111;
-            /* PERMANENT LINK: Ab jab bhi gallery se nayi photo bg.jpg naam se upload karoge, sabhi users ko wahi dikhegi */
+            /* Crystal Clear Background Image */
             background-image: url('https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg');
             background-size: cover; background-position: center; background-repeat: no-repeat;
             display: flex; justify-content: center; align-items: center;
@@ -18,24 +18,20 @@
             color: #fff;
         }
 
-        /* Glassmorphism Blur Overlay */
-        body::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(12px); z-index: 1;
-        }
-
         .info-bar {
             position: absolute; top: 20px; width: 85%; display: flex; justify-content: space-between;
-            font-size: 11px; font-weight: 600; z-index: 3; opacity: 0.8; letter-spacing: 1px;
+            font-size: 11px; font-weight: 600; z-index: 3; opacity: 0.9; letter-spacing: 1px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
 
         /* Modern Card UI */
         .player-container {
-            width: 240px; background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            width: 240px; background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 18px; border-radius: 16px;
             display: flex; flex-direction: column; align-items: center;
-            position: relative; z-index: 2; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            position: relative; z-index: 2; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
         }
 
         .cover-art {
@@ -54,7 +50,7 @@
 
         .progress-bar {
             -webkit-appearance: none; appearance: none;
-            width: 100%; height: 2px; background: rgba(255, 255, 255, 0.2);
+            width: 100%; height: 2px; background: rgba(255, 255, 255, 0.3);
             outline: none; cursor: pointer; border-radius: 2px;
         }
 
@@ -66,7 +62,7 @@
 
         .time-stamps {
             display: flex; justify-content: space-between;
-            font-size: 9px; margin-top: 6px; color: rgba(255, 255, 255, 0.6);
+            font-size: 9px; margin-top: 6px; color: rgba(255, 255, 255, 0.8);
         }
 
         .controls-row {
