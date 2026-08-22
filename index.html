@@ -7,34 +7,30 @@
     <title>Trucker Music Player</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { width: 100%; height: 100%; overflow: hidden; position: fixed; background-color: #000; background-image: url('https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; font-family: sans-serif; color: #fff; }
+        html, body { width: 100%; height: 100%; overflow: hidden; position: fixed; background-color: #000; background-image: url('https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg'); background-size: cover; background-position: center; font-family: sans-serif; color: #fff; }
 
-        .info-bar { position: absolute; top: 15px; width: 90%; left: 5%; display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; z-index: 10; opacity: 0.9; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+        .info-bar { position: absolute; top: 15px; width: 90%; left: 5%; display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; z-index: 10; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
         .support-btn { position: absolute; top: 40px; left: 5%; z-index: 10; }
-        .support-btn a { color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0.9; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+        .support-btn a { color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
 
         .quote-container { position: absolute; bottom: 250px; width: 90%; left: 5%; text-align: center; z-index: 10; font-size: 15px; font-weight: 700; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.9); }
 
-        /* Left Boxes */
+        /* Left Side Actions */
         .actions-container { position: absolute; top: 120px; left: 15px; display: flex; flex-direction: column; gap: 20px; z-index: 10; }
-        /* Right Box (App Install) */
-        .right-actions-container { position: absolute; top: 120px; right: 15px; z-index: 10; display: flex; flex-direction: column; align-items: center; }
-
         .action-box { display: flex; flex-direction: column; align-items: center; width: 80px; }
         .action-img { width: 60px; height: 60px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.3); object-fit: cover; margin-bottom: 5px; }
         .action-label { background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(5px); padding: 4px 8px; border-radius: 6px; font-size: 9px; text-align: center; font-weight: 600; width: 100%; }
         .action-label a { color: #fff; text-decoration: none; display: block; }
 
-        /* App Box Styling */
+        /* Right Side App Install (Sharp Box) */
+        .right-actions-container { position: absolute; top: 120px; right: 15px; z-index: 10; display: flex; flex-direction: column; align-items: center; }
         .app-install-box { display: flex; flex-direction: column; align-items: center; width: 80px; cursor: pointer; }
-        .red-logo { width: 60px; height: 60px; background-color: red; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: white; text-align: center; margin-bottom: 5px; border: 2px solid #fff; }
-        .install-text { background: red; color: white; padding: 4px 8px; border-radius: 6px; font-size: 9px; text-align: center; font-weight: 600; width: 100%; border: 1px solid #fff; }
+        .sharp-box { width: 60px; height: 60px; background-color: #fff; border: 2px solid #000; border-radius: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #000; text-align: center; margin-bottom: 5px; }
+        .install-text { background: #fff; color: #000; padding: 4px; border: 2px solid #000; border-radius: 0; font-size: 9px; text-align: center; font-weight: 800; width: 100%; }
 
-        /* Player Wrapper */
+        /* Player */
         .player-wrapper { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; z-index: 10; }
         .player-card { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 20px; padding: 10px 18px; }
-        
-        /* ... Keep existing player styles ... */
         .top-section { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
         .cd-art { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.3); animation: spin 8s linear infinite; animation-play-state: paused; }
         .cd-art.playing { animation-play-state: running; }
@@ -70,31 +66,31 @@
 
     <div id="quote-container" class="quote-container">Loading...</div>
 
-    <!-- Left side -->
+    <!-- Left Actions -->
     <div class="actions-container">
         <div class="action-box">
             <img src="dhaba.jpg" class="action-img" alt="Dhaba" onerror="this.style.display='none'">
-            <div class="action-label"><a href="https://www.google.com/maps/search/dhabas+near+me" target="_blank">नजदीकी चाय-पानी / Dhaba</a></div>
+            <div class="action-label"><a href="https://www.google.com/maps/search/dhabas+near+me" target="_blank">Dhaba</a></div>
         </div>
         <div class="action-box">
             <img src="fule.jpg" class="action-img" alt="Fuel" onerror="this.style.display='none'">
-            <div class="action-label"><a href="https://www.google.com/maps/search/diesel+pump+near+me" target="_blank">नजदीकी diesel Pump</a></div>
+            <div class="action-label"><a href="https://www.google.com/maps/search/diesel+pump+near+me" target="_blank">Diesel Pump</a></div>
         </div>
     </div>
 
-    <!-- Right side App Install -->
+    <!-- Right Install Button -->
     <div class="right-actions-container">
         <div class="app-install-box" id="install-btn">
-            <div class="red-logo">ट्रक वाला</div>
-            <div class="install-text">Install App</div>
+            <div class="sharp-box">ट्रक<br>वाला</div>
+            <div class="install-text">INSTALL</div>
         </div>
     </div>
 
-    <!-- Player... -->
+    <!-- Player -->
     <div class="player-wrapper">
         <div class="player-card">
             <div class="top-section">
-                <img id="cd-disc" class="cd-art" src="https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/cd.jpg" onerror="this.src='https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg'" alt="CD">
+                <img id="cd-disc" class="cd-art" src="https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/cd.jpg" alt="CD">
                 <div class="song-details">
                     <div class="song-title" id="song-name">Loading...</div>
                     <div class="artist-name" id="artist-name">Artist</div>
@@ -118,17 +114,27 @@
         </div>
     </div>
 
-    <!-- ... (Keep existing script tag for playlist modal and other logic) ... -->
+    <div class="playlist-modal" id="playlist-modal">
+        <div class="playlist-header" style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>Playlist</h3><button class="icon-btn" id="close-playlist">✕</button></div>
+        <input type="text" id="search-bar" class="search-input" placeholder="Search...">
+        <div class="song-list" id="song-list"></div>
+    </div>
+
     <script src="data.js"></script>
     <script>
-        // PWA Install Logic
+        // Install Logic
         let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { deferredPrompt = e; });
-        document.getElementById('install-btn').addEventListener('click', () => { if (deferredPrompt) deferredPrompt.prompt(); });
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+        document.getElementById('install-btn').addEventListener('click', () => { 
+            if(deferredPrompt) { deferredPrompt.prompt(); } else { alert("App is already installed or not supported yet."); }
+        });
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
 
-        // (Previous Quote and Player logic remains same)
+        // Quotes Logic
         const quotes = ["धीरे चल प्यारे, जीवन अनमोल है।", "धीरे चलोगे तो बार-बार मिलोगे, तेज चलोगे तो हरिद्वार मिलोगे।", "दम है तो क्रॉस कर, नहीं तो बर्दाश्त कर।", "वाहन चलाते समय सौंदर्य दर्शन ना करें वरना देव दर्शन हो जाएंगे।", "सावधानी हटी, सब्जी-पूड़ी बंटी।", "हवा से बातें करता है, जरा हट के चल।", "यह तूफान मेल से कम नहीं, और किसी में इतना दम नहीं।", "धीरे चलाने वाला भी मर्द होता है, यकीन मानिए हड्डियां टूटती हैं तो दर्द होता है।", "गंगा तेरा पानी अमृत।", "मां का आशीर्वाद है, यूं ही चलते रहेंगे।", "ऐ मालिक, क्यों बनाया गाड़ी बनाने वाले को, घर बेघर कर दिया गाड़ी चलाने वाले को।", "मिलेगा मुकद्र, या रब तेरा ही आसरा।", "बुरी नजर वाले तेरा मुंह काला।", "कोई जलो मत भाई से, समझ गए ना अब किसी से नहीं जलना।", "सोच कर सोचो, साथ क्या जाएगा।", "सड़कों का राजा, ऐसे ही चलता है।", "भर के चले, फिर भी एक दिन खाली हाथ ही जाना है।", "किस्मत तेरी दासी है, घर में मथुरा काशी है।", "मालिक की गाड़ी, ड्राइवर का पसीना, चलती है रोड पर बन कर हसीना।", "अनार कली भर कर चली।", "लटक मत, पटक दूंगी।", "नीम का पेड़ चंदन से कम नहीं, हमारा गुडगाँव लंदन से कम नहीं।", "जरा कम पी मेरी रानी, इराक का पानी बहुत महंगा है।", "मैं भी बड़ा होकर ट्रक बनूंगा।", "जल मत पगली, किस्तों पे आई है।", "18 की बीनणी, 21 का दूल्हा, बाल विवाह करना अपराध है।", "जब बेटी ही नहीं बचाओगे, तो बहू कहां से लाओगे।", "भगवान ही बचाए इन तीनों से, डाक्टर, पुलिस और हसीनों से।", "हस मत पगली वरना प्यार हो जाएगा तो प्यार हुआ क्या?", "बुरी नजर वाले, तेरे बच्चे जियें; बड़े होकर, तेरा ही खून पियें !", "मिनी ट्रक पर लिखा हुआ - बड़ा होकर ट्रक बनूँगा !", "क्यों मरते तो बेवफा सनम के लिए, दो गज जमीन मिलेगी दफन के लिए।", "मरना हो तो मरो अपने वतन की मिट्टी के लिए , हसीना भी दुपट्टा उतार देगी कफन के लिए।", "अपनी आजादी को हरगिज मिटा सकते नहीं।", "सर कटा सकते हैं लेकिन सर झुका सकते नहीं।", "इश्क तो करता है हर कोई, महबूब पर मरता है हर कोई।", "कभी अपने वतन को महबूब बना कर देखो, तुझपे मरेगा हर कोई."];
         let qIndex = 0; function updateQuote() { document.getElementById('quote-container').innerText = quotes[qIndex]; qIndex = (qIndex + 1) % quotes.length; } setInterval(updateQuote, 15000); updateQuote();
+        
+        // Clock & Player Logic
         function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); } setInterval(updateClock, 1000); updateClock();
         const audio = document.getElementById('audio'), playBtn = document.getElementById('play-btn'), playIcon = document.getElementById('play-icon'), pauseIcon = document.getElementById('pause-icon'), progress = document.getElementById('progress'), currentTimeEl = document.getElementById('current-time'), durationEl = document.getElementById('duration'), nextBtn = document.getElementById('next'), prevBtn = document.getElementById('prev'), shuffleBtn = document.getElementById('shuffle-btn'), songNameEl = document.getElementById('song-name'), artistNameEl = document.getElementById('artist-name'), cdDisc = document.getElementById('cd-disc'); let currentSongIndex = 0, isPlaying = false, isShuffle = false; function loadSong(index) { const currentSong = myPlaylist[index]; songNameEl.innerText = currentSong.name; artistNameEl.innerText = currentSong.artist; audio.src = currentSong.audio; audio.load(); renderPlaylist(); } function togglePlay() { if (isPlaying) { audio.pause(); playIcon.style.display = 'block'; pauseIcon.style.display = 'none'; cdDisc.classList.remove('playing'); } else { audio.play(); playIcon.style.display = 'none'; pauseIcon.style.display = 'block'; cdDisc.classList.add('playing'); } isPlaying = !isPlaying; } playBtn.addEventListener('click', togglePlay); nextBtn.addEventListener('click', () => { currentSongIndex = isShuffle ? Math.floor(Math.random() * myPlaylist.length) : (currentSongIndex + 1) % myPlaylist.length; loadSong(currentSongIndex); if(isPlaying) audio.play(); }); prevBtn.addEventListener('click', () => { currentSongIndex = (currentSongIndex - 1 + myPlaylist.length) % myPlaylist.length; loadSong(currentSongIndex); if(isPlaying) audio.play(); }); shuffleBtn.addEventListener('click', () => { isShuffle = !isShuffle; shuffleBtn.classList.toggle('active', isShuffle); }); audio.addEventListener('timeupdate', () => { if(audio.duration) { progress.value = (audio.currentTime/audio.duration)*100; let cM = Math.floor(audio.currentTime/60), cS = Math.floor(audio.currentTime%60), dM = Math.floor(audio.duration/60), dS = Math.floor(audio.duration%60); currentTimeEl.innerText = `${cM}:${cS<10?'0'+cS:cS}`; durationEl.innerText = `${dM}:${dS<10?'0'+dS:dS}`; } }); progress.addEventListener('input', () => audio.currentTime = (progress.value/100)*audio.duration); audio.addEventListener('ended', () => nextBtn.click()); const playlistModal = document.getElementById('playlist-modal'), playlistBtn = document.getElementById('playlist-btn'), closePlaylist = document.getElementById('close-playlist'), songListContainer = document.getElementById('song-list'), searchBar = document.getElementById('search-bar'); playlistBtn.addEventListener('click', () => playlistModal.style.display = 'flex'); closePlaylist.addEventListener('click', () => playlistModal.style.display = 'none'); function renderPlaylist(filter = '') { songListContainer.innerHTML = ''; myPlaylist.forEach((song, index) => { if(song.name.toLowerCase().includes(filter.toLowerCase())) { const item = document.createElement('div'); item.className = `song-item ${index===currentSongIndex?'active':''}`; item.innerHTML = `<div><strong>${song.name}</strong><br><small>${song.artist}</small></div>`; item.onclick = () => { currentSongIndex = index; loadSong(currentSongIndex); playlistModal.style.display='none'; if(!isPlaying) togglePlay(); else audio.play(); }; songListContainer.appendChild(item); } }); } searchBar.addEventListener('input', (e) => renderPlaylist(e.target.value)); if(typeof myPlaylist !== 'undefined') loadSong(currentSongIndex);
     </script>
