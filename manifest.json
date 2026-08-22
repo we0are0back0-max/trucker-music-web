@@ -3,8 +3,8 @@
   "short_name": "Truck Wala",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#ff0000",
+  "theme_color": "#ff0000",
   "icons": [
     {
       "src": "icon.png",
