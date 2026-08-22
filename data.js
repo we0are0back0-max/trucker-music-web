@@ -49,4 +49,5 @@ const myPlaylist = [
     { name: "to chalun", artist: "Artist Name", audio: "song48.mp3", cover: "song48.jpg" },
     { name: "jindagi Ki talash mein ham", artist: "Artist Name", audio: "song49.mp3", cover: "song49.jpg" },
     { name: "sochenge tumhen pyar", artist: "Artist Name", audio: "song50.mp3", cover: "song50.jpg" },
+];
     
