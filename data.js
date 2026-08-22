@@ -12,7 +12,7 @@ const myPlaylist = [
     { name: "Mahobbat Ki Nhi Jati ", artist: "Artist Name", audio: "song11.mp3", cover: "song11.jpg" },
     { name: "Callage Ki Natkhai Callage Ki Ladkiyon", artist: "Artist Name", audio: "song12.mp3", cover: "song12.jpg" },
     { name: "Saat Samundar Par", artist: "Artist Name", audio: "song13.mp3", cover: "song13.jpg" },
-    { name: "Dilbar Dilbar", artist: "Artist Name", audio: "song14.mp3", cover: "song14.jpg" },
+    { name: "Mera Dil jis Dil pe Fida Hai", artist: "Artist Name", audio: "song14.mp3", cover: "song14.jpg" },
     { name: "Oh Oh Jane Jana", artist: "Artist Name", audio: "song15.mp3", cover: "song15.jpg" },
     { name: "Chunri Chunri", artist: "Artist Name", audio: "song16.mp3", cover: "song16.jpg" },
     { name: "Ye Dil Diwana", artist: "Artist Name", audio: "song17.mp3", cover: "song17.jpg" },
