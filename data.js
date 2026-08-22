@@ -3,7 +3,7 @@ const myPlaylist = [
     { name: "Pahli Pahli Bar Mahobbat Ki Hai", artist: "Artist Name", audio: "song2.mp3", cover: "song2.jpg" },
     { name: "Oye Raju Payar Na Kariyo", artist: "Artist Name", audio: "song3.mp3", cover: "song3.jpg" },
     { name: "Kuon Ki Itna Pyar", artist: "Artist Name", audio: "song4.mp3", cover: "song4.jpg" },
-    { name: "....name ....", artist: "Artist Name", audio: "song5.mp3", cover: "song5.jpg" },
+    { name: "Do Lafzon Me", artist: "Artist Name", audio: "song5.mp3", cover: "song5.jpg" },
     { name: "....name ....", artist: "Artist Name", audio: "song6.mp3", cover: "song6.jpg" },
     { name: "....name ....", artist: "Artist Name", audio: "song7.mp3", cover: "song7.jpg" },
     { name: "....name ....", artist: "Artist Name", audio: "song8.mp3", cover: "song8.jpg" },
