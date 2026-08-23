@@ -116,7 +116,7 @@
             "अनार कली भर कर चली।", "लटक मत, पटक दूंगी।", "नीम का पेड़ चंदन से कम नहीं, हमारा गुडगाँव लंदन से कम नहीं।",
             "जरा कम पी मेरी रानी, इराक का पानी बहुत महंगा है।", "मैं भी बड़ा होकर ट्रक बनूंगा।", "जल मत पगली, किस्तों पे आई है।",
             "18 की बीनणी, 21 का दूल्हा, बाल विवाह करना अपराध है।", "जब बेटी ही नहीं बचाओगे, तो बहू कहां से लाओगे।",
-            "भगवान ही बचाए इन तीनों से, डाक्टर, पुलिस और हसीनों से।", "हस मत पगली वरना प्यार हो जाएगा तो प्यार हुआ क्या?",
+            "भगवान ही बचाए इन तीनों से, डाक्टर, पुलिस और हसीनों से।", "हस मत पगली वरना प्यार हुआ क्या?",
             "बुरी नजर वाले, तेरे बच्चे जियें; बड़े होकर, तेरा ही खून पियें !", "मिनी ट्रक पर लिखा हुआ - बड़ा होकर ट्रक बनूँगा !",
             "क्यों मरते तो बेवफा सनम के लिए, दो गज जमीन मिलेगी दफन के लिए।", "मरना हो तो मरो अपने वतन की मिट्टी के लिए , हसीना भी दुपट्टा उतार देगी कफन के लिए।",
             "अपनी आजादी को हरगिज मिटा सकते नहीं।", "सर कटा सकते हैं लेकिन सर झुका सकते नहीं।",
@@ -131,12 +131,115 @@
         
         const audio = document.getElementById('audio'), playBtn = document.getElementById('play-btn'), playIcon = document.getElementById('play-icon'), pauseIcon = document.getElementById('pause-icon'), progress = document.getElementById('progress'), currentTimeEl = document.getElementById('current-time'), durationEl = document.getElementById('duration'), nextBtn = document.getElementById('next'), prevBtn = document.getElementById('prev'), shuffleBtn = document.getElementById('shuffle-btn'), songNameEl = document.getElementById('song-name'), artistNameEl = document.getElementById('artist-name'), cdDisc = document.getElementById('cd-disc');
         let currentSongIndex = 0, isPlaying = false, isShuffle = false;
-        function loadSong(index) { const currentSong = myPlaylist[index]; songNameEl.innerText = currentSong.name; artistNameEl.innerText = currentSong.artist; audio.src = currentSong.audio; audio.load(); renderPlaylist(); }
-        function togglePlay() { if (isPlaying) { audio.pause(); playIcon.style.display = 'block'; pauseIcon.style.display = 'none'; cdDisc.classList.remove('playing'); } else { audio.play(); playIcon.style.display = 'none'; pauseIcon.style.display = 'block'; cdDisc.classList.add('playing'); } isPlaying = !isPlaying; }
-        playBtn.addEventListener('click', togglePlay); nextBtn.addEventListener('click', () => { currentSongIndex = isShuffle ? Math.floor(Math.random() * myPlaylist.length) : (currentSongIndex + 1) % myPlaylist.length; loadSong(currentSongIndex); if(isPlaying) audio.play(); }); prevBtn.addEventListener('click', () => { currentSongIndex = (currentSongIndex - 1 + myPlaylist.length) % myPlaylist.length; loadSong(currentSongIndex); if(isPlaying) audio.play(); }); shuffleBtn.addEventListener('click', () => { isShuffle = !isShuffle; shuffleBtn.classList.toggle('active', isShuffle); }); audio.addEventListener('timeupdate', () => { if(audio.duration) { progress.value = (audio.currentTime/audio.duration)*100; let cM = Math.floor(audio.currentTime/60), cS = Math.floor(audio.currentTime%60), dM = Math.floor(audio.duration/60), dS = Math.floor(audio.duration%60); currentTimeEl.innerText = `${cM}:${cS<10?'0'+cS:cS}`; durationEl.innerText = `${dM}:${dS<10?'0'+dS:dS}`; } }); progress.addEventListener('input', () => audio.currentTime = (progress.value/100)*audio.duration); audio.addEventListener('ended', () => nextBtn.click());
+        
+        function loadSong(index) { 
+            const currentSong = myPlaylist[index]; 
+            songNameEl.innerText = currentSong.name; 
+            artistNameEl.innerText = currentSong.artist; 
+            audio.src = currentSong.audio; 
+            audio.load(); 
+            renderPlaylist(); 
+
+            // Media Session API update (ताकि लॉकस्क्रीन पर गाने का नाम दिखे और बैकग्राउंड में न रुके)
+            if ('mediaSession' in navigator && currentSong) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: currentSong.name,
+                    artist: currentSong.artist,
+                    artwork: [{ src: 'https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/cd.jpg', sizes: '512x512', type: 'image/jpeg' }]
+                });
+            }
+        }
+
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator && isPlaying) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        function togglePlay() { 
+            if (isPlaying) { 
+                audio.pause(); 
+                playIcon.style.display = 'block'; 
+                pauseIcon.style.display = 'none'; 
+                cdDisc.classList.remove('playing'); 
+                if (wakeLock) { wakeLock.release(); wakeLock = null; }
+            } else { 
+                audio.play(); 
+                playIcon.style.display = 'none'; 
+                pauseIcon.style.display = 'block'; 
+                cdDisc.classList.add('playing'); 
+                requestWakeLock();
+            } 
+            isPlaying = !isPlaying; 
+        }
+
+        playBtn.addEventListener('click', togglePlay); 
+        
+        nextBtn.addEventListener('click', () => { 
+            currentSongIndex = isShuffle ? Math.floor(Math.random() * myPlaylist.length) : (currentSongIndex + 1) % myPlaylist.length; 
+            loadSong(currentSongIndex); 
+            if(isPlaying) audio.play(); 
+        }); 
+        
+        prevBtn.addEventListener('click', () => { 
+            currentSongIndex = (currentSongIndex - 1 + myPlaylist.length) % myPlaylist.length; 
+            loadSong(currentSongIndex); 
+            if(isPlaying) audio.play(); 
+        }); 
+        
+        shuffleBtn.addEventListener('click', () => { 
+            isShuffle = !isShuffle; 
+            shuffleBtn.classList.toggle('active', isShuffle); 
+        }); 
+        
+        audio.addEventListener('timeupdate', () => { 
+            if(audio.duration) { 
+                progress.value = (audio.currentTime/audio.duration)*100; 
+                let cM = Math.floor(audio.currentTime/60), cS = Math.floor(audio.currentTime%60), dM = Math.floor(audio.duration/60), dS = Math.floor(audio.duration%60); 
+                currentTimeEl.innerText = `${cM}:${cS<10?'0'+cS:cS}`; 
+                durationEl.innerText = `${dM}:${dS<10?'0'+dS:dS}`; 
+            } 
+        }); 
+        
+        progress.addEventListener('input', () => audio.currentTime = (progress.value/100)*audio.duration); 
+        audio.addEventListener('ended', () => nextBtn.click());
+
+        // Media Session Controls (Lock screen play/pause/skip buttons support)
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('play', () => { if(!isPlaying) togglePlay(); });
+            navigator.mediaSession.setActionHandler('pause', () => { if(isPlaying) togglePlay(); });
+            navigator.mediaSession.setActionHandler('previoustrack', () => { prevBtn.click(); });
+            navigator.mediaSession.setActionHandler('nexttrack', () => { nextBtn.click(); });
+        }
+
         const playlistModal = document.getElementById('playlist-modal'), playlistBtn = document.getElementById('playlist-btn'), closePlaylist = document.getElementById('close-playlist'), songListContainer = document.getElementById('song-list'), searchBar = document.getElementById('search-bar');
-        playlistBtn.addEventListener('click', () => playlistModal.style.display = 'flex'); closePlaylist.addEventListener('click', () => playlistModal.style.display = 'none');
-        function renderPlaylist(filter = '') { songListContainer.innerHTML = ''; myPlaylist.forEach((song, index) => { if(song.name.toLowerCase().includes(filter.toLowerCase())) { const item = document.createElement('div'); item.className = `song-item ${index===currentSongIndex?'active':''}`; item.innerHTML = `<div><strong>${song.name}</strong><br><small>${song.artist}</small></div>`; item.onclick = () => { currentSongIndex = index; loadSong(currentSongIndex); playlistModal.style.display='none'; if(!isPlaying) togglePlay(); else audio.play(); }; songListContainer.appendChild(item); } }); }
+        playlistBtn.addEventListener('click', () => playlistModal.style.display = 'flex'); 
+        closePlaylist.addEventListener('click', () => playlistModal.style.display = 'none');
+        
+        function renderPlaylist(filter = '') { 
+            songListContainer.innerHTML = ''; 
+            myPlaylist.forEach((song, index) => { 
+                if(song.name.toLowerCase().includes(filter.toLowerCase())) { 
+                    const item = document.createElement('div'); 
+                    item.className = `song-item ${index===currentSongIndex?'active':''}`; 
+                    item.innerHTML = `<div><strong>${song.name}</strong><br><small>${song.artist}</small></div>`; 
+                    item.onclick = () => { 
+                        currentSongIndex = index; 
+                        loadSong(currentSongIndex); 
+                        playlistModal.style.display='none'; 
+                        if(!isPlaying) togglePlay(); 
+                        else audio.play(); 
+                    }; 
+                    songListContainer.appendChild(item); 
+                } 
+            }); 
+        }
+        
         searchBar.addEventListener('input', (e) => renderPlaylist(e.target.value));
         if(typeof myPlaylist !== 'undefined') loadSong(currentSongIndex);
     </script>
