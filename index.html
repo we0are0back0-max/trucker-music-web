@@ -12,7 +12,6 @@
         .support-btn { position: absolute; top: 40px; left: 5%; z-index: 10; }
         .support-btn a { color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0.9; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
 
-        /* Quotes Container */
         .quote-container { position: absolute; bottom: 250px; width: 90%; left: 5%; text-align: center; z-index: 10; font-size: 15px; font-weight: 700; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.9); }
 
         .actions-container { position: absolute; top: 120px; left: 15px; display: flex; flex-direction: column; gap: 20px; z-index: 10; }
@@ -21,12 +20,12 @@
         .action-label { background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(5px); padding: 4px 8px; border-radius: 6px; font-size: 9px; text-align: center; font-weight: 600; width: 100%; }
         .action-label a { color: #fff; text-decoration: none; display: block; }
 
-        /* Mode Switcher Buttons (Exact above music box) */
+        /* Mode Switcher Buttons */
         .mode-buttons-container { position: absolute; bottom: 175px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; display: flex; justify-content: space-between; z-index: 15; gap: 10px; }
         .mode-btn { flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.5); background: #000; color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; transition: 0.2s; }
         .mode-btn.active { background: #fff; color: #000; border-color: #fff; }
 
-        /* Original Player Wrapper */
+        /* Player Wrapper */
         .player-wrapper { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; z-index: 10; }
         .player-card { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 20px; padding: 10px 18px; }
         .top-section { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
@@ -50,6 +49,9 @@
         .song-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; }
         .song-item.active { background: #333; }
         svg { fill: currentColor; }
+
+        /* Hidden Youtube Container Fix */
+        #youtube-player-container { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; top: -9999px; }
     </style>
 </head>
 <body>
@@ -63,7 +65,6 @@
         <a href="https://www.instagram.com/shiva_008i?igsi=MWFmc2VxanJ3NHJyNQ==" target="_blank">Support ID</a>
     </div>
 
-    <!-- Quote Box -->
     <div id="quote-container" class="quote-container">Loading...</div>
 
     <div class="actions-container">
@@ -77,13 +78,11 @@
         </div>
     </div>
 
-    <!-- Mode Switcher Buttons (Exact above music player) -->
     <div class="mode-buttons-container">
         <button id="btn-site" class="mode-btn active">From This Site</button>
         <button id="btn-youtube" class="mode-btn">From YouTube</button>
     </div>
 
-    <!-- Original Music Player Box -->
     <div class="player-wrapper">
         <div class="player-card">
             <div class="top-section">
@@ -95,8 +94,7 @@
             </div>
             <audio id="audio"></audio>
             
-            <!-- Hidden YouTube Iframe for YouTube Mode -->
-            <div id="youtube-player-container" style="display:none;"><div id="youtube-player"></div></div>
+            <div id="youtube-player-container"><div id="youtube-player"></div></div>
 
             <div class="progress-container">
                 <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100">
@@ -121,44 +119,35 @@
         <div class="song-list" id="song-list"></div>
     </div>
 
-    <!-- External Data Files -->
     <script src="data.js"></script>
     <script src="youtube.js"></script>
     <script>
-        const quotes = [
-            "धीरे चल प्यारे, जीवन अनमोल है।", "धीरे चलोगे तो बार-बार मिलोगे, तेज चलोगे तो हरिद्वार मिलोगे।", "दम है तो क्रॉस कर, नहीं तो बर्दाश्त कर।",
-            "वाहन चलाते समय सौंदर्य दर्शन ना करें वरना देव दर्शन हो जाएंगे।", "सावधानी हटी, सब्जी-पूड़ी बंटी।", "हवा से बातें करता है, जरा हट के चल।"
-        ];
+        const quotes = ["धीरे चल प्यारे, जीवन अनमोल है।", "सावधानी हटी, सब्जी-पूड़ी बंटी।", "दम है तो क्रॉस कर, नहीं तो बर्दाश्त कर।"];
         let qIndex = 0;
-        function updateQuote() { document.getElementById('quote-container').innerText = quotes[qIndex]; qIndex = (qIndex + 1) % quotes.length; }
-        setInterval(updateQuote, 15000); updateQuote();
+        setInterval(() => { document.getElementById('quote-container').innerText = quotes[qIndex]; qIndex = (qIndex + 1) % quotes.length; }, 15000);
+        document.getElementById('quote-container').innerText = quotes[0];
 
-        function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
-        setInterval(updateClock, 1000); updateClock();
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000);
 
-        // YouTube API Loader
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         document.head.appendChild(tag);
 
-        let ytPlayer, currentMode = 'site'; // 'site' or 'youtube'
-        let currentSongIndex = 0, isPlaying = false, isShuffle = false;
-        let progressTimer;
+        let ytPlayer, ytReady = false, currentMode = 'site', currentSongIndex = 0, isPlaying = false, isShuffle = false, progressTimer;
 
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('youtube-player', {
-                height: '0', width: '0',
+                height: '200', width: '200',
                 videoId: (typeof ytPlaylist !== 'undefined' && ytPlaylist.length > 0) ? ytPlaylist[0].ytId : '',
-                events: { 'onStateChange': onYTStateChange }
+                playerVars: { 'autoplay': 0, 'controls': 0 },
+                events: {
+                    'onReady': () => { ytReady = true; },
+                    'onStateChange': (e) => { if (e.data === YT.PlayerState.ENDED) document.getElementById('next').click(); }
+                }
             });
         }
 
-        function onYTStateChange(event) {
-            if (event.data == YT.PlayerState.ENDED) { document.getElementById('next').click(); }
-        }
-
         const audio = document.getElementById('audio'), playBtn = document.getElementById('play-btn'), playIcon = document.getElementById('play-icon'), pauseIcon = document.getElementById('pause-icon'), progress = document.getElementById('progress'), currentTimeEl = document.getElementById('current-time'), durationEl = document.getElementById('duration'), nextBtn = document.getElementById('next'), prevBtn = document.getElementById('prev'), shuffleBtn = document.getElementById('shuffle-btn'), songNameEl = document.getElementById('song-name'), artistNameEl = document.getElementById('artist-name'), cdDisc = document.getElementById('cd-disc');
-        const btnSite = document.getElementById('btn-site'), btnYoutube = document.getElementById('btn-youtube');
 
         function loadCurrentSong(index) {
             clearInterval(progressTimer);
@@ -169,17 +158,16 @@
                 artistNameEl.innerText = song.artist;
                 audio.src = song.audio;
                 audio.load();
-                if(ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo();
+                if (ytReady && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
             } else {
                 if (typeof ytPlaylist === 'undefined' || !ytPlaylist[index]) return;
                 const song = ytPlaylist[index];
                 songNameEl.innerText = song.name;
                 artistNameEl.innerText = song.artist;
-                if(ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
-                    ytPlayer.loadVideoById(song.ytId);
-                    if(!isPlaying) ytPlayer.pauseVideo();
-                }
                 audio.pause();
+                if (ytReady && ytPlayer.cueVideoById) {
+                    ytPlayer.cueVideoById(song.ytId);
+                }
             }
             renderPlaylist();
         }
@@ -187,20 +175,30 @@
         function togglePlay() {
             if (isPlaying) {
                 if (currentMode === 'site') audio.pause();
-                else if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo();
+                else if (ytReady && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
                 playIcon.style.display = 'block';
                 pauseIcon.style.display = 'none';
                 cdDisc.classList.remove('playing');
                 clearInterval(progressTimer);
+                isPlaying = false;
             } else {
-                if (currentMode === 'site') audio.play();
-                else if (ytPlayer && typeof ytPlayer.playVideo === 'function') ytPlayer.playVideo();
-                playIcon.style.display = 'none';
-                pauseIcon.style.display = 'block';
-                cdDisc.classList.add('playing');
-                startProgress();
+                if (currentMode === 'site') {
+                    audio.play().then(() => { updateUIOnPlay(); }).catch(e => console.log(e));
+                } else if (ytReady && ytPlayer.playVideo) {
+                    const song = ytPlaylist[currentSongIndex];
+                    ytPlayer.loadVideoById(song.ytId);
+                    ytPlayer.playVideo();
+                    updateUIOnPlay();
+                }
             }
-            isPlaying = !isPlaying;
+        }
+
+        function updateUIOnPlay() {
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+            cdDisc.classList.add('playing');
+            isPlaying = true;
+            startProgress();
         }
 
         function startProgress() {
@@ -214,12 +212,14 @@
                         durationEl.innerText = `${dM}:${dS<10?'0'+dS:dS}`;
                     }
                 } else {
-                    if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function' && ytPlayer.getDuration()) {
+                    if (ytReady && ytPlayer.getCurrentTime && ytPlayer.getDuration()) {
                         let cT = ytPlayer.getCurrentTime(), d = ytPlayer.getDuration();
-                        progress.value = (cT / d) * 100;
-                        let cM = Math.floor(cT/60), cS = Math.floor(cT%60), dM = Math.floor(d/60), dS = Math.floor(d%60);
-                        currentTimeEl.innerText = `${cM}:${cS<10?'0'+cS:cS}`;
-                        durationEl.innerText = `${dM}:${dS<10?'0'+dS:dS}`;
+                        if (d > 0) {
+                            progress.value = (cT / d) * 100;
+                            let cM = Math.floor(cT/60), cS = Math.floor(cT%60), dM = Math.floor(d/60), dS = Math.floor(d%60);
+                            currentTimeEl.innerText = `${cM}:${cS<10?'0'+cS:cS}`;
+                            durationEl.innerText = `${dM}:${dS<10?'0'+dS:dS}`;
+                        }
                     }
                 }
             }, 1000);
@@ -231,9 +231,9 @@
             let list = (currentMode === 'site') ? myPlaylist : ytPlaylist;
             currentSongIndex = isShuffle ? Math.floor(Math.random() * list.length) : (currentSongIndex + 1) % list.length;
             loadCurrentSong(currentSongIndex);
-            if(isPlaying) {
-                if(currentMode === 'site') audio.play();
-                else if(ytPlayer) ytPlayer.playVideo();
+            if (isPlaying) {
+                isPlaying = false;
+                togglePlay();
             }
         });
 
@@ -241,44 +241,45 @@
             let list = (currentMode === 'site') ? myPlaylist : ytPlaylist;
             currentSongIndex = (currentSongIndex - 1 + list.length) % list.length;
             loadCurrentSong(currentSongIndex);
-            if(isPlaying) {
-                if(currentMode === 'site') audio.play();
-                else if(ytPlayer) ytPlayer.playVideo();
+            if (isPlaying) {
+                isPlaying = false;
+                togglePlay();
             }
         });
 
         shuffleBtn.addEventListener('click', () => {
             isShuffle = !isShuffle;
-            shuffleBtn.classList.toggle('active', isShuffle);
+            shuffleBtn.style.opacity = isShuffle ? "1" : "0.5";
         });
 
         progress.addEventListener('input', () => {
             if (currentMode === 'site') {
                 if(audio.duration) audio.currentTime = (progress.value / 100) * audio.duration;
             } else {
-                if(ytPlayer && ytPlayer.getDuration()) ytPlayer.seekTo((progress.value / 100) * ytPlayer.getDuration(), true);
+                if(ytReady && ytPlayer.getDuration()) ytPlayer.seekTo((progress.value / 100) * ytPlayer.getDuration(), true);
             }
         });
 
         audio.addEventListener('ended', () => nextBtn.click());
 
-        // Mode Switching Logic
-        btnSite.addEventListener('click', () => {
+        document.getElementById('btn-site').addEventListener('click', () => {
+            if(currentMode === 'site') return;
+            if(isPlaying) togglePlay();
             currentMode = 'site';
-            btnSite.classList.add('active');
-            btnYoutube.classList.remove('active');
+            document.getElementById('btn-site').classList.add('active');
+            document.getElementById('btn-youtube').classList.remove('active');
             currentSongIndex = 0;
-            loadCurrentSong(currentSongIndex);
-            if(isPlaying) { audio.play(); }
+            loadCurrentSong(0);
         });
 
-        btnYoutube.addEventListener('click', () => {
+        document.getElementById('btn-youtube').addEventListener('click', () => {
+            if(currentMode === 'youtube') return;
+            if(isPlaying) togglePlay();
             currentMode = 'youtube';
-            btnYoutube.classList.add('active');
-            btnSite.classList.remove('active');
+            document.getElementById('btn-youtube').classList.add('active');
+            document.getElementById('btn-site').classList.remove('active');
             currentSongIndex = 0;
-            loadCurrentSong(currentSongIndex);
-            if(isPlaying && ytPlayer) { ytPlayer.playVideo(); }
+            loadCurrentSong(0);
         });
 
         const playlistModal = document.getElementById('playlist-modal'), playlistBtn = document.getElementById('playlist-btn'), closePlaylist = document.getElementById('close-playlist'), songListContainer = document.getElementById('song-list'), searchBar = document.getElementById('search-bar');
@@ -298,11 +299,8 @@
                         currentSongIndex = index;
                         loadCurrentSong(currentSongIndex);
                         playlistModal.style.display='none';
-                        if(!isPlaying) togglePlay();
-                        else {
-                            if(currentMode === 'site') audio.play();
-                            else if(ytPlayer) ytPlayer.playVideo();
-                        }
+                        if(isPlaying) isPlaying = false;
+                        togglePlay();
                     };
                     songListContainer.appendChild(item);
                 }
@@ -310,8 +308,7 @@
         }
         searchBar.addEventListener('input', (e) => renderPlaylist(e.target.value));
 
-        // Initial load
-        setTimeout(() => { loadCurrentSong(currentSongIndex); }, 500);
+        window.onload = () => { loadCurrentSong(0); };
     </script>
 </body>
 </html>
