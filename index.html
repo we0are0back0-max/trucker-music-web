@@ -3,364 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aesthetic Music Player</title>
+    <title>Trucker Music Player</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; height: 100%; overflow: hidden; position: fixed; background-color: #000; background-image: url('https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; font-family: sans-serif; color: #fff; }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: fixed;
-            touch-action: none;
-            
-            background-image: url('https://cdn.jsdelivr.net/gh/we0are0back0-max/trucker-music-web@main/64e285ad54fd721bc64723753da45c98.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: #1a1a1a;
-        }
+        .info-bar { position: absolute; top: 15px; width: 90%; left: 5%; display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; z-index: 10; opacity: 0.9; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+        .support-btn { position: absolute; top: 40px; left: 5%; z-index: 10; }
+        .support-btn a { color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0.9; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(8px);
-            z-index: 1;
-        }
+        .quote-container { position: absolute; bottom: 210px; width: 90%; left: 5%; text-align: center; z-index: 10; font-size: 15px; font-weight: 700; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.9); }
 
-        /* Top Info Bar (Clock & Live Users) */
-        .info-bar {
-            position: absolute;
-            top: 15px;
-            width: 90%;
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            font-weight: 700;
-            z-index: 3;
-            letter-spacing: 0.5px;
-        }
+        .actions-container { position: absolute; top: 120px; left: 15px; display: flex; flex-direction: column; gap: 20px; z-index: 10; }
+        .action-box { display: flex; flex-direction: column; align-items: center; width: 80px; }
+        .action-img { width: 60px; height: 60px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.3); object-fit: cover; margin-bottom: 5px; }
+        .action-label { background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(5px); padding: 4px 8px; border-radius: 6px; font-size: 9px; text-align: center; font-weight: 600; width: 100%; }
+        .action-label a { color: #fff; text-decoration: none; display: block; }
 
-        .player-container {
-            width: 210px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .cover-art {
-            width: 210px;
-            height: 210px;
-            object-fit: cover;
-            margin-bottom: 10px;
-            border-radius: 2px;
-            pointer-events: none;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-
-        .song-title {
-            font-size: 11px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
-            letter-spacing: 0.3px;
-        }
-
-        .top-action-bar {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 0 2px;
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #1a1a1a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            outline: none;
-        }
-
-        .progress-wrapper {
-            width: 100%;
-            margin-bottom: 15px;
-            touch-action: auto;
-        }
-
-        .progress-bar {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 1px;
-            background: #1a1a1a;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .progress-bar::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #1a1a1a;
-            cursor: pointer;
-        }
-
-        .time-stamps {
-            display: flex;
-            justify-content: space-between;
-            font-size: 9px;
-            font-weight: 600;
-            margin-top: 5px;
-            letter-spacing: 0.5px;
-        }
-
-        .controls-row {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .play-pause-circle {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            border: 1px solid #1a1a1a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            cursor: pointer;
-            outline: none;
-        }
-
-        svg {
-            fill: currentColor;
-        }
+        .player-wrapper { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; z-index: 10; }
+        .player-card { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 20px; padding: 12px 18px; }
+        .top-section { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .cd-art { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.3); animation: spin 8s linear infinite; animation-play-state: paused; }
+        .cd-art.playing { animation-play-state: running; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .song-details { flex: 1; overflow: hidden; }
+        .song-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .artist-name { font-size: 11px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .progress-container { width: 100%; margin-bottom: 8px; }
+        .progress-bar { -webkit-appearance: none; width: 100%; height: 2px; background: rgba(255, 255, 255, 0.3); outline: none; border-radius: 2px; }
+        .progress-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+        .time-stamps { display: flex; font-size: 9px; margin-top: 4px; color: #bbb; }
+        .controls-row { display: flex; justify-content: space-between; align-items: center; }
+        .icon-btn { background: none; border: none; cursor: pointer; color: #fff; opacity: 0.85; padding: 5px; }
+        .play-pause-circle { width: 40px; height: 40px; border-radius: 50%; background: #fff; color: #000; border: none; display: flex; align-items: center; justify-content: center; }
+        
+        .playlist-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 100; display: none; flex-direction: column; padding: 20px; }
+        .search-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff; margin-bottom: 15px; }
+        .song-list { flex: 1; overflow-y: auto; }
+        .song-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; }
+        .song-item.active { background: #333; }
+        svg { fill: currentColor; }
     </style>
 </head>
 <body>
 
-    <!-- Top Info Bar: Clock & Live Users -->
     <div class="info-bar">
         <div id="clock">00:00</div>
         <div id="live-users">Live: 750</div>
     </div>
+    
+    <div class="support-btn">
+        <a href="https://www.instagram.com/shiva_008i?igsi=MWFmc2VxanJ3NHJyNQ==" target="_blank">Support ID</a>
+    </div>
 
-    <div class="player-container">
-        <!-- Compact Square Cover Photo -->
-        <img id="cover" class="cover-art" src="" alt="Cover">
+    <div id="quote-container" class="quote-container">Loading...</div>
 
-        <!-- Song Name Display -->
-        <div class="song-title" id="song-name">Loading...</div>
-
-        <!-- Top Icons Bar -->
-        <div class="top-action-bar">
-            <button class="icon-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-            </button>
-            <button class="icon-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="5" cy="12" r="1.5"/>
-                    <circle cx="12" cy="12" r="1.5"/>
-                    <circle cx="19" cy="12" r="1.5"/>
-                </svg>
-            </button>
+    <div class="actions-container">
+        <div class="action-box">
+            <img src="dhaba.jpg" class="action-img" alt="Dhaba" onerror="this.style.display='none'">
+            <div class="action-label"><a href="https://www.google.com/maps/search/dhabas+near+me" target="_blank">नजदीकी चाय-पानी / Dhaba</a></div>
         </div>
-
-        <audio id="audio"></audio>
-
-        <!-- Timeline / Progress -->
-        <div class="progress-wrapper">
-            <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100">
-            <div class="time-stamps">
-                <span id="current-time">0:00</span>
-                <span id="duration">0:00</span>
-            </div>
-        </div>
-
-        <!-- Player Controls -->
-        <div class="controls-row">
-            <!-- Shuffle / Random Song Button -->
-            <button class="icon-btn" id="shuffle-btn" title="Random Song">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
-                </svg>
-            </button>
-
-            <!-- Previous -->
-            <button class="icon-btn" id="prev">
-                <svg width="14" height="14" viewBox="0 0 24 24">
-                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-                </svg>
-            </button>
-
-            <!-- Play / Pause -->
-            <button class="play-pause-circle" id="play-btn">
-                <svg id="play-icon" width="14" height="14" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                </svg>
-                <svg id="pause-icon" width="14" height="14" viewBox="0 0 24 24" style="display:none;">
-                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                </svg>
-            </button>
-
-            <!-- Next -->
-            <button class="icon-btn" id="next">
-                <svg width="14" height="14" viewBox="0 0 24 24">
-                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-                </svg>
-            </button>
-
-            <!-- Repeat / Placeholder -->
-            <button class="icon-btn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M17 2l4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3"/>
-                </svg>
-            </button>
+        <div class="action-box">
+            <img src="fule.jpg" class="action-img" alt="Fuel" onerror="this.style.display='none'">
+            <div class="action-label"><a href="https://www.google.com/maps/search/diesel+pump+near+me" target="_blank">नजदीकी diesel Pump</a></div>
         </div>
     </div>
 
-    <!-- DATA.JS LINKED -->
+    <div class="player-wrapper">
+        <div class="player-card">
+            <div class="top-section">
+                <img id="cd-disc" class="cd-art" src="https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/cd.jpg" onerror="this.src='https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg'" alt="CD">
+                <div class="song-details">
+                    <div class="song-title" id="song-name">Loading...</div>
+                    <div class="artist-name" id="artist-name">Artist</div>
+                </div>
+            </div>
+            <audio id="audio"></audio>
+
+            <div class="progress-container">
+                <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100">
+                <div class="time-stamps"><span id="current-time">0:00</span>&nbsp;/&nbsp;<span id="duration">0:00</span></div>
+            </div>
+            <div class="controls-row">
+                <button class="icon-btn" id="shuffle-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></button>
+                <button class="icon-btn" id="prev"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+                <button class="play-pause-circle" id="play-btn">
+                    <svg id="play-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg id="pause-icon" width="16" height="16" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <button class="icon-btn" id="next"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+                <button class="icon-btn" id="playlist-btn"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h11v2H4z"/></svg></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="playlist-modal" id="playlist-modal">
+        <div class="playlist-header" style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>Playlist</h3><button class="icon-btn" id="close-playlist">✕</button></div>
+        <input type="text" id="search-bar" class="search-input" placeholder="Search...">
+        <div class="song-list" id="song-list"></div>
+    </div>
+
     <script src="data.js"></script>
-
     <script>
-        // Clock Logic
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+        const quotes = [
+            "धीरे चल प्यारे, जीवन अनमोल है।", 
+            "सावधानी हटी, सब्जी-पूड़ी बंटी।", 
+            "दम है तो क्रॉस कर, नहीं तो बर्दाश्त कर।",
+            "धीरे चलोगे तो बार-बार मिलोगे, तेज चलोगे तो हरिद्वार मिलोगे।",
+            "हवा से बातें करता है, जरा हट के चल।"
+        ];
+        let qIndex = 0;
+        setInterval(() => { 
+            document.getElementById('quote-container').innerText = quotes[qIndex]; 
+            qIndex = (qIndex + 1) % quotes.length; 
+        }, 15000);
+        document.getElementById('quote-container').innerText = quotes[0];
 
-        // Live User Counter (700-800)
-        setInterval(() => {
-            const randomCount = Math.floor(Math.random() * (800 - 700 + 1)) + 700;
-            document.getElementById('live-users').innerText = "Live: " + randomCount;
-        }, 3000);
+        setInterval(() => { 
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); 
+        }, 1000);
 
-        // Player Logic
-        const audio = document.getElementById('audio');
-        const playBtn = document.getElementById('play-btn');
-        const playIcon = document.getElementById('play-icon');
-        const pauseIcon = document.getElementById('pause-icon');
-        const progress = document.getElementById('progress');
-        const currentTimeEl = document.getElementById('current-time');
-        const durationEl = document.getElementById('duration');
-        const nextBtn = document.getElementById('next');
-        const prevBtn = document.getElementById('prev');
-        const shuffleBtn = document.getElementById('shuffle-btn');
-        const songNameEl = document.getElementById('song-name');
-        const coverEl = document.getElementById('cover');
-
-        let currentSongIndex = 0;
-        let isPlaying = false;
+        let currentSongIndex = 0, isPlaying = false, isShuffle = false;
+        const audio = document.getElementById('audio'), 
+              playBtn = document.getElementById('play-btn'), 
+              playIcon = document.getElementById('play-icon'), 
+              pauseIcon = document.getElementById('pause-icon'), 
+              progress = document.getElementById('progress'), 
+              currentTimeEl = document.getElementById('current-time'), 
+              durationEl = document.getElementById('duration'), 
+              nextBtn = document.getElementById('next'), 
+              prevBtn = document.getElementById('prev'), 
+              shuffleBtn = document.getElementById('shuffle-btn'), 
+              songNameEl = document.getElementById('song-name'), 
+              artistNameEl = document.getElementById('artist-name'), 
+              cdDisc = document.getElementById('cd-disc');
 
         function loadSong(index) {
-            const currentSong = myPlaylist[index];
-            songNameEl.innerText = currentSong.name;
-            coverEl.src = currentSong.cover;
-            audio.src = currentSong.audio;
-            audio.load();
+            if (typeof myPlaylist === 'undefined' || !myPlaylist[index]) return;
+            const song = myPlaylist[index];
+            songNameEl.innerText = song.name;
+            artistNameEl.innerText = song.artist;
+            audio.src = song.audio;
+            renderPlaylist();
         }
-
-        loadSong(currentSongIndex);
 
         function togglePlay() {
             if (isPlaying) {
                 audio.pause();
                 playIcon.style.display = 'block';
                 pauseIcon.style.display = 'none';
+                cdDisc.classList.remove('playing');
             } else {
                 audio.play();
                 playIcon.style.display = 'none';
                 pauseIcon.style.display = 'block';
+                cdDisc.classList.add('playing');
             }
             isPlaying = !isPlaying;
         }
 
         playBtn.addEventListener('click', togglePlay);
 
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                progress.value = (audio.currentTime / audio.duration) * 100;
+                let cM = Math.floor(audio.currentTime / 60), cS = Math.floor(audio.currentTime % 60);
+                let dM = Math.floor(audio.duration / 60), dS = Math.floor(audio.duration % 60);
+                currentTimeEl.innerText = `${cM}:${cS < 10 ? '0' + cS : cS}`;
+                durationEl.innerText = `${dM}:${dS < 10 ? '0' + dS : dS}`;
+            }
+        });
+
+        progress.addEventListener('input', () => {
+            if (audio.duration) audio.currentTime = (progress.value / 100) * audio.duration;
+        });
+
         nextBtn.addEventListener('click', () => {
-            currentSongIndex = (currentSongIndex + 1) % myPlaylist.length;
+            if (typeof myPlaylist === 'undefined') return;
+            currentSongIndex = isShuffle ? Math.floor(Math.random() * myPlaylist.length) : (currentSongIndex + 1) % myPlaylist.length;
             loadSong(currentSongIndex);
             if (isPlaying) audio.play();
         });
 
         prevBtn.addEventListener('click', () => {
+            if (typeof myPlaylist === 'undefined') return;
             currentSongIndex = (currentSongIndex - 1 + myPlaylist.length) % myPlaylist.length;
             loadSong(currentSongIndex);
             if (isPlaying) audio.play();
         });
 
-        // Shuffle / Random Song Button Logic
         shuffleBtn.addEventListener('click', () => {
-            let randomIndex;
-            do {
-                randomIndex = Math.floor(Math.random() * myPlaylist.length);
-            } while (randomIndex === currentSongIndex && myPlaylist.length > 1);
-            
-            currentSongIndex = randomIndex;
-            loadSong(currentSongIndex);
-            if (isPlaying) audio.play();
+            isShuffle = !isShuffle;
+            shuffleBtn.style.opacity = isShuffle ? "1" : "0.5";
         });
 
-        audio.addEventListener('timeupdate', () => {
-            if (audio.duration) {
-                const progressPercent = (audio.currentTime / audio.duration) * 100;
-                progress.value = progressPercent;
+        audio.addEventListener('ended', () => nextBtn.click());
 
-                let curMins = Math.floor(audio.currentTime / 60);
-                let curSecs = Math.floor(audio.currentTime % 60);
-                if (curSecs < 10) curSecs = '0' + curSecs;
-                currentTimeEl.innerText = `${curMins}:${curSecs}`;
+        const playlistModal = document.getElementById('playlist-modal'), 
+              playlistBtn = document.getElementById('playlist-btn'), 
+              closePlaylist = document.getElementById('close-playlist'), 
+              songListContainer = document.getElementById('song-list'), 
+              searchBar = document.getElementById('search-bar');
 
-                let durMins = Math.floor(audio.duration / 60);
-                let durSecs = Math.floor(audio.duration % 60);
-                if (durSecs < 10) durSecs = '0' + durSecs;
-                durationEl.innerText = `${durMins}:${durSecs}`;
-            }
-        });
+        playlistBtn.addEventListener('click', () => playlistModal.style.display = 'flex');
+        closePlaylist.addEventListener('click', () => playlistModal.style.display = 'none');
 
-        progress.addEventListener('input', () => {
-            const seekTime = (progress.value / 100) * audio.duration;
-            audio.currentTime = seekTime;
-        });
+        function renderPlaylist(filter = '') {
+            songListContainer.innerHTML = '';
+            if (typeof myPlaylist === 'undefined') return;
+            myPlaylist.forEach((song, index) => {
+                if (song.name.toLowerCase().includes(filter.toLowerCase())) {
+                    const item = document.createElement('div');
+                    item.className = `song-item ${index === currentSongIndex ? 'active' : ''}`;
+                    item.innerHTML = `<div><strong>${song.name}</strong><br><small>${song.artist}</small></div>`;
+                    item.onclick = () => {
+                        currentSongIndex = index;
+                        loadSong(currentSongIndex);
+                        playlistModal.style.display = 'none';
+                        if (!isPlaying) togglePlay();
+                        else audio.play();
+                    };
+                    songListContainer.appendChild(item);
+                }
+            });
+        }
+        searchBar.addEventListener('input', (e) => renderPlaylist(e.target.value));
 
-        audio.addEventListener('ended', () => {
-            nextBtn.click();
-        });
+        window.onload = () => { loadSong(0); };
     </script>
 </body>
 </html>
