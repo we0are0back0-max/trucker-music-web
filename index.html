@@ -88,12 +88,12 @@
                 <img id="cd-disc" class="cd-art" src="https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/cd.jpg" onerror="this.src='https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg'" alt="CD">
                 <div class="song-details">
                     <div class="song-title" id="song-name">Ready to Play</div>
-                    <div class="artist-name" id="artist-name">Select Radio or Playlist</div>
-                    <div class="status-msg" id="status-msg">Tap Radio to Start</div>
+                    <div class="artist-name" id="artist-name">Select Radio Channel</div>
+                    <div class="status-msg" id="status-msg">Click Radio Button Above</div>
                 </div>
             </div>
             
-            <audio id="audio" preload="none"></audio>
+            <audio id="audio"></audio>
 
             <div class="progress-container">
                 <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100">
@@ -162,113 +162,61 @@
             statusMsg.innerText = msg;
         }
 
-        // Guaranteed Active Radio Streams
-        const radioStreams = {
-            radio1: [
-                'https://stream.zeno.fm/f3wvbb754wzuv',
-                'https://stream.zeno.fm/0883394628quv'
-            ],
-            radio2: [
-                'https://stream.zeno.fm/601r2f8e138uv',
-                'https://stream.zeno.fm/4g48bh2628quv'
-            ]
-        };
+        // Direct Working Streams (Strict HTTPS Standard Direct Streams)
+        const URL_RADIO_1 = 'https://stream.zeno.fm/f3wvbb754wzuv';
+        const URL_RADIO_2 = 'https://stream.zeno.fm/601r2f8e138uv';
 
-        let currentActiveList = [];
-        let currentListIndex = 0;
-
-        audio.addEventListener('waiting', () => setStatus('Connecting Stream...'));
-        audio.addEventListener('playing', () => {
+        audio.onplaying = function() {
             setStatus('▶ Playing Now');
             playIcon.style.display = 'none';
             pauseIcon.style.display = 'block';
             cdDisc.classList.add('playing');
-        });
-        audio.addEventListener('pause', () => {
+        };
+
+        audio.onpause = function() {
             setStatus('Paused');
             playIcon.style.display = 'block';
             pauseIcon.style.display = 'none';
             cdDisc.classList.remove('playing');
-        });
+        };
 
-        audio.addEventListener('error', () => {
-            if (currentActiveList.length > 0 && currentListIndex < currentActiveList.length - 1) {
-                currentListIndex++;
-                setStatus('Connecting Backup Server...');
-                audio.src = currentActiveList[currentListIndex];
-                audio.load();
-                audio.play().catch(e => setStatus('⚠️ Tap Play Button'));
-            } else {
-                setStatus('⚠️ Tap Play Again');
-                playIcon.style.display = 'block';
-                pauseIcon.style.display = 'none';
-                cdDisc.classList.remove('playing');
-            }
-        });
+        audio.onerror = function() {
+            setStatus('⚠️ Stream Error - Tap Again');
+            playIcon.style.display = 'block';
+            pauseIcon.style.display = 'none';
+            cdDisc.classList.remove('playing');
+        };
 
-        function playRadioChannel(list, title, artist) {
-            currentActiveList = list;
-            currentListIndex = 0;
-            songNameEl.innerText = title;
-            artistNameEl.innerText = artist;
-            setStatus('Loading Radio...');
+        // Synchronous Direct Touch Execution for Mobile Browsers
+        document.getElementById('btn-radio1').onclick = function() {
+            songNameEl.innerText = 'सदाबहार हिंदी रेडियो';
+            artistNameEl.innerText = 'Live Retro Hits';
+            setStatus('Connecting...');
+            audio.src = URL_RADIO_1;
+            audio.play();
+        };
 
-            audio.src = currentActiveList[0];
-            audio.load();
-            
-            let playPromise = audio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    setStatus('▶ Playing Now');
-                }).catch(err => {
-                    setStatus('⚠️ Tap Play Button');
-                });
-            }
-        }
+        document.getElementById('btn-radio2').onclick = function() {
+            songNameEl.innerText = 'क्लासिक 80s-90s';
+            artistNameEl.innerText = 'Golden Era Hits';
+            setStatus('Connecting...');
+            audio.src = URL_RADIO_2;
+            audio.play();
+        };
 
-        document.getElementById('btn-radio1').addEventListener('click', () => {
-            playRadioChannel(radioStreams.radio1, 'सदाबहार हिंदी रेडियो', 'Live Retro Radio');
-        });
-
-        document.getElementById('btn-radio2').addEventListener('click', () => {
-            playRadioChannel(radioStreams.radio2, 'क्लासिक 80s-90s', 'Golden Hits');
-        });
-
-        function loadSong(index) {
-            if (typeof myPlaylist === 'undefined' || !myPlaylist[index]) {
-                setStatus('Playlist missing');
+        playBtn.onclick = function() {
+            if (!audio.src) {
+                document.getElementById('btn-radio1').click();
                 return;
             }
-            currentActiveList = [];
-            const song = myPlaylist[index];
-            songNameEl.innerText = song.name;
-            artistNameEl.innerText = song.artist;
-            audio.src = song.audio;
-            audio.load();
-            renderPlaylist();
-        }
-
-        playBtn.addEventListener('click', () => {
-            if (!audio.src) {
-                if (typeof myPlaylist !== 'undefined' && myPlaylist.length > 0) {
-                    loadSong(0);
-                } else {
-                    playRadioChannel(radioStreams.radio1, 'सदाबहार हिंदी रेडियो', 'Live Retro Radio');
-                    return;
-                }
-            }
             if (audio.paused) {
-                audio.play().then(() => {
-                    setStatus('▶ Playing Now');
-                }).catch(() => {
-                    setStatus('⚠️ Tap Play Again');
-                });
+                audio.play();
             } else {
                 audio.pause();
             }
-        });
+        };
 
-        audio.addEventListener('timeupdate', () => {
+        audio.ontimeupdate = function() {
             if (audio.duration && !isNaN(audio.duration) && audio.duration !== Infinity) {
                 progress.value = (audio.currentTime / audio.duration) * 100;
                 let cM = Math.floor(audio.currentTime / 60), cS = Math.floor(audio.currentTime % 60);
@@ -279,32 +227,41 @@
                 currentTimeEl.innerText = "LIVE";
                 durationEl.innerText = "STREAM";
             }
-        });
+        };
 
-        progress.addEventListener('input', () => {
+        progress.oninput = function() {
             if (audio.duration && !isNaN(audio.duration)) audio.currentTime = (progress.value / 100) * audio.duration;
-        });
+        };
 
-        nextBtn.addEventListener('click', () => {
+        function loadSong(index) {
+            if (typeof myPlaylist === 'undefined' || !myPlaylist[index]) return;
+            const song = myPlaylist[index];
+            songNameEl.innerText = song.name;
+            artistNameEl.innerText = song.artist;
+            audio.src = song.audio;
+            renderPlaylist();
+        }
+
+        nextBtn.onclick = function() {
             if (typeof myPlaylist === 'undefined') return;
             currentSongIndex = isShuffle ? Math.floor(Math.random() * myPlaylist.length) : (currentSongIndex + 1) % myPlaylist.length;
             loadSong(currentSongIndex);
-            audio.play().catch(e => setStatus('Error playing song'));
-        });
+            audio.play();
+        };
 
-        prevBtn.addEventListener('click', () => {
+        prevBtn.onclick = function() {
             if (typeof myPlaylist === 'undefined') return;
             currentSongIndex = (currentSongIndex - 1 + myPlaylist.length) % myPlaylist.length;
             loadSong(currentSongIndex);
-            audio.play().catch(e => setStatus('Error playing song'));
-        });
+            audio.play();
+        };
 
-        shuffleBtn.addEventListener('click', () => {
+        shuffleBtn.onclick = function() {
             isShuffle = !isShuffle;
             shuffleBtn.style.opacity = isShuffle ? "1" : "0.5";
-        });
+        };
 
-        audio.addEventListener('ended', () => nextBtn.click());
+        audio.onended = function() { nextBtn.click(); };
 
         const playlistModal = document.getElementById('playlist-modal'), 
               playlistBtn = document.getElementById('playlist-btn'), 
@@ -312,8 +269,8 @@
               songListContainer = document.getElementById('song-list'), 
               searchBar = document.getElementById('search-bar');
 
-        playlistBtn.addEventListener('click', () => playlistModal.style.display = 'flex');
-        closePlaylist.addEventListener('click', () => playlistModal.style.display = 'none');
+        playlistBtn.onclick = function() { playlistModal.style.display = 'flex'; };
+        closePlaylist.onclick = function() { playlistModal.style.display = 'none'; };
 
         function renderPlaylist(filter = '') {
             songListContainer.innerHTML = '';
@@ -326,19 +283,19 @@
                     const item = document.createElement('div');
                     item.className = `song-item ${index === currentSongIndex ? 'active' : ''}`;
                     item.innerHTML = `<div><strong>${song.name}</strong><br><small>${song.artist}</small></div>`;
-                    item.onclick = () => {
+                    item.onclick = function() {
                         currentSongIndex = index;
                         loadSong(currentSongIndex);
                         playlistModal.style.display = 'none';
-                        audio.play().catch(e => setStatus('Error playing song'));
+                        audio.play();
                     };
                     songListContainer.appendChild(item);
                 }
             });
         }
-        searchBar.addEventListener('input', (e) => renderPlaylist(e.target.value));
+        searchBar.oninput = function(e) { renderPlaylist(e.target.value); };
 
-        window.onload = () => { 
+        window.onload = function() { 
             if (typeof myPlaylist !== 'undefined' && myPlaylist.length > 0) {
                 loadSong(0);
             }
