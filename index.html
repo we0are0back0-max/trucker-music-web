@@ -89,7 +89,9 @@
                     <div class="artist-name" id="artist-name">Artist</div>
                 </div>
             </div>
-            <audio id="audio" crossorigin="anonymous"></audio>
+            
+            <!-- Removed crossorigin attribute to fix browser playback block -->
+            <audio id="audio" preload="none"></audio>
 
             <div class="progress-container">
                 <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100">
@@ -140,7 +142,7 @@
             "लटक मत, पटक दूंगी।",
             "नीम का पेड़ चंदन से कम नहीं, हमारा गुडगाँव लंदन से कम नहीं।",
             "जरा कम पी मेरी रानी, इराक का पानी बहुत महंगा है।",
-            "मैं भी बड़ा होकर ट्रक बनऊंगा।",
+            "मैं भी बड़ा होकर ट्रक बनूंगा।",
             "जल मत पगली, किस्तों पे आई है।",
             "18 की बीनणी, 21 का दूल्हा, बाल विवाह करना अपराध है।",
             "जब बेटी ही नहीं बचाओगे, तो बहू कहां से लाओगे।",
@@ -183,7 +185,6 @@
               artistNameEl = document.getElementById('artist-name'), 
               cdDisc = document.getElementById('cd-disc');
 
-        // Audio events handling (Fixes stuck play button)
         audio.addEventListener('play', () => {
             playIcon.style.display = 'none';
             pauseIcon.style.display = 'block';
@@ -196,26 +197,29 @@
             cdDisc.classList.remove('playing');
         });
 
-        audio.addEventListener('error', () => {
-            playIcon.style.display = 'block';
-            pauseIcon.style.display = 'none';
-            cdDisc.classList.remove('playing');
-        });
-
         function loadSong(index) {
             if (typeof myPlaylist === 'undefined' || !myPlaylist[index]) return;
             const song = myPlaylist[index];
             songNameEl.innerText = song.name;
             artistNameEl.innerText = song.artist;
+            audio.pause();
             audio.src = song.audio;
+            audio.load();
             renderPlaylist();
         }
 
         function playRadio(streamUrl, name, artist) {
             songNameEl.innerText = name;
             artistNameEl.innerText = artist;
+            audio.pause();
             audio.src = streamUrl;
-            audio.play().catch(e => console.log("Play failed: ", e));
+            audio.load();
+            var playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Radio error: ", error);
+                });
+            }
         }
 
         function togglePlay() {
