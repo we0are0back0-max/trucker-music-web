@@ -12,7 +12,7 @@
         .support-btn { position: absolute; top: 40px; left: 5%; z-index: 10; }
         .support-btn a { color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0.9; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
 
-        .quote-container { position: absolute; bottom: 210px; width: 90%; left: 5%; text-align: center; z-index: 10; font-size: 15px; font-weight: 700; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.9); padding: 0 10px; }
+        .quote-container { position: absolute; bottom: 235px; width: 90%; left: 5%; text-align: center; z-index: 10; font-size: 14px; font-weight: 700; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.9); padding: 0 10px; }
 
         .actions-container { position: absolute; top: 120px; left: 15px; display: flex; flex-direction: column; gap: 20px; z-index: 10; }
         .action-box { display: flex; flex-direction: column; align-items: center; width: 80px; }
@@ -20,7 +20,12 @@
         .action-label { background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(5px); padding: 4px 8px; border-radius: 6px; font-size: 9px; text-align: center; font-weight: 600; width: 100%; }
         .action-label a { color: #fff; text-decoration: none; display: block; }
 
-        .player-wrapper { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; z-index: 10; }
+        /* Radio Buttons Styles */
+        .radio-buttons-container { position: absolute; bottom: 185px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; display: flex; gap: 10px; z-index: 10; justify-content: center; }
+        .radio-btn { flex: 1; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 12px; padding: 8px 6px; color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,0.8); transition: 0.2s; }
+        .radio-btn:active { background: rgba(255, 255, 255, 0.3); }
+
+        .player-wrapper { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; z-index: 10; }
         .player-card { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 20px; padding: 12px 18px; }
         .top-section { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
         .cd-art { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.3); animation: spin 8s linear infinite; animation-play-state: paused; }
@@ -69,6 +74,12 @@
         </div>
     </div>
 
+    <!-- Live Radio Channels Buttons (Music Box ke upar) -->
+    <div class="radio-buttons-container">
+        <button class="radio-btn" onclick="playRadio('https://air.pc.cdn.bitgravity.com/air/live/pbaudio001/playlist.m3u8', 'विविध भारती (Vividh Bharati)', 'AIR Live 24x7')">📻 विविध भारती</button>
+        <button class="radio-btn" onclick="playRadio('https://radio.zeno.fm/f3wvbb754wzuv', 'Retro Bollywood 90s', 'Retro Hits Live')">🎶 Retro Bollywood</button>
+    </div>
+
     <div class="player-wrapper">
         <div class="player-card">
             <div class="top-section">
@@ -105,7 +116,6 @@
 
     <script src="data.js"></script>
     <script>
-        // आपकी सभी शायरियां यहाँ सुरक्षित डाल दी गई हैं
         const quotes = [
             "धीरे चल प्यारे, जीवन अनमोल है।",
             "धीरे चलोगे तो बार-बार मिलोगे, तेज चलोगे तो हरिद्वार मिलोगे।",
@@ -182,6 +192,18 @@
             renderPlaylist();
         }
 
+        // Live Radio Switch Function
+        function playRadio(streamUrl, name, artist) {
+            audio.src = streamUrl;
+            songNameEl.innerText = name;
+            artistNameEl.innerText = artist;
+            audio.play();
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+            cdDisc.classList.add('playing');
+            isPlaying = true;
+        }
+
         function togglePlay() {
             if (isPlaying) {
                 audio.pause();
@@ -206,6 +228,10 @@
                 let dM = Math.floor(audio.duration / 60), dS = Math.floor(audio.duration % 60);
                 currentTimeEl.innerText = `${cM}:${cS < 10 ? '0' + cS : cS}`;
                 durationEl.innerText = `${dM}:${dS < 10 ? '0' + dS : dS}`;
+            } else {
+                // Live streaming doesn't have fixed duration
+                currentTimeEl.innerText = "LIVE";
+                durationEl.innerText = "∞";
             }
         });
 
