@@ -39,7 +39,7 @@
 
         .progress-container { width: 100%; margin-bottom: 8px; margin-top: 4px; }
         .progress-bar { -webkit-appearance: none; width: 100%; height: 3px; background: rgba(255, 255, 255, 0.3); outline: none; border-radius: 2px; }
-        .progress-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 100%; height: 10px; border-radius: 50%; background: #fff; }
+        .progress-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff; }
         .time-stamps { display: flex; font-size: 9px; margin-top: 4px; color: #bbb; justify-content: space-between; }
         .controls-row { display: flex; justify-content: space-between; align-items: center; }
         .icon-btn { background: none; border: none; cursor: pointer; color: #fff; opacity: 0.85; padding: 5px; }
@@ -89,12 +89,12 @@
                 <img id="cd-disc" class="cd-art" src="https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/cd.jpg" onerror="this.src='https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg'" alt="CD">
                 <div class="song-details">
                     <div class="song-title" id="song-name">Ready to Play</div>
-                    <div class="artist-name" id="artist-name">Select a Song or Radio</div>
-                    <div class="status-msg" id="status-msg">Click Radio or Play</div>
+                    <div class="artist-name" id="artist-name">Select Radio or Playlist</div>
+                    <div class="status-msg" id="status-msg">Click Radio button</div>
                 </div>
             </div>
             
-            <audio id="audio" preload="none"></audio>
+            <audio id="audio" crossorigin="anonymous"></audio>
 
             <div class="progress-container">
                 <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100">
@@ -163,7 +163,22 @@
             statusMsg.innerText = msg;
         }
 
-        audio.addEventListener('waiting', () => setStatus('Buffering...'));
+        // Multiple SSL Streams with Fallback
+        const streams = {
+            radio1: [
+                'https://n08.radiojar.com/8s4463a510uvv',
+                'https://stream.zeno.fm/f3wvbb754wzuv'
+            ],
+            radio2: [
+                'https://stream.zeno.fm/601r2f8e138uv',
+                'https://stream.zeno.fm/0883394628quv'
+            ]
+        };
+
+        let currentStreamList = [];
+        let currentStreamIdx = 0;
+
+        audio.addEventListener('waiting', () => setStatus('Connecting server...'));
         audio.addEventListener('playing', () => {
             setStatus('▶ Playing Now');
             playIcon.style.display = 'none';
@@ -176,42 +191,46 @@
             pauseIcon.style.display = 'none';
             cdDisc.classList.remove('playing');
         });
+
         audio.addEventListener('error', () => {
-            setStatus('⚠️ Stream Blocked - Tap Play Again');
-            playIcon.style.display = 'block';
-            pauseIcon.style.display = 'none';
-            cdDisc.classList.remove('playing');
+            if (currentStreamList.length > 0 && currentStreamIdx < currentStreamList.length - 1) {
+                currentStreamIdx++;
+                setStatus('Switching Backup Server...');
+                audio.src = currentStreamList[currentStreamIdx];
+                audio.play().catch(e => setStatus('⚠️ Tap Play Again'));
+            } else {
+                setStatus('⚠️ Stream Blocked (Tap Play)');
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+                cdDisc.classList.remove('playing');
+            }
         });
 
-        // Fixed Direct Execution Stream Playback
-        function playStream(url, title, artist) {
-            setStatus('Connecting...');
+        function startRadio(list, title, artist) {
+            currentStreamList = list;
+            currentStreamIdx = 0;
             songNameEl.innerText = title;
             artistNameEl.innerText = artist;
-            
-            if (audio.src !== url) {
-                audio.src = url;
-            }
+            setStatus('Connecting SSL Radio...');
 
-            // Direct call without audio.load() to prevent gesture break on mobile
-            var promise = audio.play();
-            if (promise !== undefined) {
-                promise.then(() => {
-                    setStatus('▶ Playing Now');
-                }).catch(err => {
-                    console.log("Audio play error:", err);
-                    setStatus('▶ Tap Play Button');
+            // Direct play invocation inside user gesture
+            audio.removeAttribute('crossorigin');
+            audio.src = currentStreamList[0];
+            
+            var p = audio.play();
+            if (p !== undefined) {
+                p.catch(() => {
+                    setStatus('⚠️ Tap Play Button');
                 });
             }
         }
 
-        // Direct HTTPS Compatible Streams
         document.getElementById('btn-radio1').addEventListener('click', () => {
-            playStream('https://stream.zeno.fm/f3wvbb754wzuv', 'सदाबहार हिंदी रेडियो', 'Live Retro Radio');
+            startRadio(streams.radio1, 'सदाबहार हिंदी रेडियो', 'Live Retro Radio');
         });
 
         document.getElementById('btn-radio2').addEventListener('click', () => {
-            playStream('https://stream.zeno.fm/601r2f8e138uv', 'क्लासिक 80s-90s', 'Golden Hits');
+            startRadio(streams.radio2, 'क्लासिक 80s-90s', 'Golden Era Hits');
         });
 
         function loadSong(index) {
@@ -219,6 +238,7 @@
                 setStatus('Playlist missing');
                 return;
             }
+            currentStreamList = [];
             const song = myPlaylist[index];
             songNameEl.innerText = song.name;
             artistNameEl.innerText = song.artist;
@@ -231,15 +251,15 @@
                 if (typeof myPlaylist !== 'undefined' && myPlaylist.length > 0) {
                     loadSong(0);
                 } else {
-                    playStream('https://stream.zeno.fm/f3wvbb754wzuv', 'सदाबहार हिंदी रेडियो', 'Live Retro Radio');
+                    startRadio(streams.radio1, 'सदाबहार हिंदी रेडियो', 'Live Retro Radio');
                     return;
                 }
             }
             if (audio.paused) {
                 audio.play().then(() => {
                     setStatus('▶ Playing Now');
-                }).catch(err => {
-                    setStatus('⚠️ Click again to start');
+                }).catch(() => {
+                    setStatus('⚠️ Tap Play Button');
                 });
             } else {
                 audio.pause();
