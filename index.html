@@ -74,9 +74,9 @@
         </div>
     </div>
 
-    <!-- Live Ultra-Fast Radio Buttons -->
+    <!-- Live Radio Buttons -->
     <div class="radio-buttons-container">
-        <button class="radio-btn" onclick="playRadio('https://stream.zeno.fm/f3wvbb754wzuv', 'सदाबहार हिंदी रेडियो', 'Non-Stop Retro Hits')">📻 सदाबहार रेडियो</button>
+        <button class="radio-btn" onclick="playRadio('https://stream.zeno.fm/f3wvbb754wzuv', 'सदाबहार हिंदी रेडियो', 'Retro Hits Live')">📻 सदाबहार रेडियो</button>
         <button class="radio-btn" onclick="playRadio('https://stream.zeno.fm/601r2f8e138uv', 'पुराने क्लासिक गाने', 'Golden Era Hits')">🎶 क्लासिक 80s-90s</button>
     </div>
 
@@ -89,7 +89,7 @@
                     <div class="artist-name" id="artist-name">Artist</div>
                 </div>
             </div>
-            <audio id="audio" preload="none"></audio>
+            <audio id="audio" crossorigin="anonymous"></audio>
 
             <div class="progress-container">
                 <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100">
@@ -140,7 +140,7 @@
             "लटक मत, पटक दूंगी।",
             "नीम का पेड़ चंदन से कम नहीं, हमारा गुडगाँव लंदन से कम नहीं।",
             "जरा कम पी मेरी रानी, इराक का पानी बहुत महंगा है।",
-            "मैं भी बड़ा होकर ट्रक बनूंगा।",
+            "मैं भी बड़ा होकर ट्रक बनऊंगा।",
             "जल मत पगली, किस्तों पे आई है।",
             "18 की बीनणी, 21 का दूल्हा, बाल विवाह करना अपराध है।",
             "जब बेटी ही नहीं बचाओगे, तो बहू कहां से लाओगे।",
@@ -168,7 +168,7 @@
             document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); 
         }, 1000);
 
-        let currentSongIndex = 0, isPlaying = false, isShuffle = false;
+        let currentSongIndex = 0, isShuffle = false;
         const audio = document.getElementById('audio'), 
               playBtn = document.getElementById('play-btn'), 
               playIcon = document.getElementById('play-icon'), 
@@ -183,46 +183,50 @@
               artistNameEl = document.getElementById('artist-name'), 
               cdDisc = document.getElementById('cd-disc');
 
+        // Audio events handling (Fixes stuck play button)
+        audio.addEventListener('play', () => {
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+            cdDisc.classList.add('playing');
+        });
+
+        audio.addEventListener('pause', () => {
+            playIcon.style.display = 'block';
+            pauseIcon.style.display = 'none';
+            cdDisc.classList.remove('playing');
+        });
+
+        audio.addEventListener('error', () => {
+            playIcon.style.display = 'block';
+            pauseIcon.style.display = 'none';
+            cdDisc.classList.remove('playing');
+        });
+
         function loadSong(index) {
             if (typeof myPlaylist === 'undefined' || !myPlaylist[index]) return;
             const song = myPlaylist[index];
             songNameEl.innerText = song.name;
             artistNameEl.innerText = song.artist;
-            audio.pause();
             audio.src = song.audio;
-            audio.load();
             renderPlaylist();
         }
 
-        // Direct Stream Radio Handler
         function playRadio(streamUrl, name, artist) {
-            audio.pause();
             songNameEl.innerText = name;
             artistNameEl.innerText = artist;
             audio.src = streamUrl;
-            audio.load();
-            audio.play().then(() => {
-                playIcon.style.display = 'none';
-                pauseIcon.style.display = 'block';
-                cdDisc.classList.add('playing');
-                isPlaying = true;
-            }).catch(e => console.log("Play blocked: ", e));
+            audio.play().catch(e => console.log("Play failed: ", e));
         }
 
         function togglePlay() {
-            if (isPlaying) {
-                audio.pause();
-                playIcon.style.display = 'block';
-                pauseIcon.style.display = 'none';
-                cdDisc.classList.remove('playing');
+            if (audio.paused) {
+                if (!audio.src && typeof myPlaylist !== 'undefined' && myPlaylist.length > 0) {
+                    loadSong(0);
+                }
+                audio.play().catch(e => console.log("Play failed: ", e));
             } else {
-                audio.play().then(() => {
-                    playIcon.style.display = 'none';
-                    pauseIcon.style.display = 'block';
-                    cdDisc.classList.add('playing');
-                });
+                audio.pause();
             }
-            isPlaying = !isPlaying;
         }
 
         playBtn.addEventListener('click', togglePlay);
@@ -248,14 +252,14 @@
             if (typeof myPlaylist === 'undefined') return;
             currentSongIndex = isShuffle ? Math.floor(Math.random() * myPlaylist.length) : (currentSongIndex + 1) % myPlaylist.length;
             loadSong(currentSongIndex);
-            if (isPlaying) audio.play();
+            audio.play().catch(e => console.log(e));
         });
 
         prevBtn.addEventListener('click', () => {
             if (typeof myPlaylist === 'undefined') return;
             currentSongIndex = (currentSongIndex - 1 + myPlaylist.length) % myPlaylist.length;
             loadSong(currentSongIndex);
-            if (isPlaying) audio.play();
+            audio.play().catch(e => console.log(e));
         });
 
         shuffleBtn.addEventListener('click', () => {
@@ -286,8 +290,7 @@
                         currentSongIndex = index;
                         loadSong(currentSongIndex);
                         playlistModal.style.display = 'none';
-                        if (!isPlaying) togglePlay();
-                        else audio.play();
+                        audio.play().catch(e => console.log(e));
                     };
                     songListContainer.appendChild(item);
                 }
