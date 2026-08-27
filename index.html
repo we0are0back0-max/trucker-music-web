@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Trucker Music Player</title>
-    <!-- HLS support for Live Streaming -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { width: 100%; height: 100%; overflow: hidden; position: fixed; background-color: #000; background-image: url('https://raw.githubusercontent.com/we0are0back0-max/trucker-music-web/main/bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; font-family: sans-serif; color: #fff; }
@@ -76,10 +74,10 @@
         </div>
     </div>
 
-    <!-- Live Radio Channels Buttons -->
+    <!-- Live Ultra-Fast Radio Buttons -->
     <div class="radio-buttons-container">
-        <button class="radio-btn" onclick="playRadio('https://air.pc.cdn.bitgravity.com/air/live/pbaudio001/playlist.m3u8', 'विविध भारती (Vividh Bharati)', 'AIR Live 24x7')">📻 विविध भारती</button>
-        <button class="radio-btn" onclick="playRadio('https://stream.zeno.fm/f3wvbb754wzuv', 'Retro Bollywood 90s', 'Retro Hits Live')">🎶 Retro Bollywood</button>
+        <button class="radio-btn" onclick="playRadio('https://stream.zeno.fm/f3wvbb754wzuv', 'सदाबहार हिंदी रेडियो', 'Non-Stop Retro Hits')">📻 सदाबहार रेडियो</button>
+        <button class="radio-btn" onclick="playRadio('https://stream.zeno.fm/601r2f8e138uv', 'पुराने क्लासिक गाने', 'Golden Era Hits')">🎶 क्लासिक 80s-90s</button>
     </div>
 
     <div class="player-wrapper">
@@ -91,7 +89,7 @@
                     <div class="artist-name" id="artist-name">Artist</div>
                 </div>
             </div>
-            <audio id="audio"></audio>
+            <audio id="audio" preload="none"></audio>
 
             <div class="progress-container">
                 <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100">
@@ -170,7 +168,7 @@
             document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); 
         }, 1000);
 
-        let currentSongIndex = 0, isPlaying = false, isShuffle = false, hlsPlayer = null;
+        let currentSongIndex = 0, isPlaying = false, isShuffle = false;
         const audio = document.getElementById('audio'), 
               playBtn = document.getElementById('play-btn'), 
               playIcon = document.getElementById('play-icon'), 
@@ -185,50 +183,30 @@
               artistNameEl = document.getElementById('artist-name'), 
               cdDisc = document.getElementById('cd-disc');
 
-        function stopHLS() {
-            if (hlsPlayer) {
-                hlsPlayer.destroy();
-                hlsPlayer = null;
-            }
-        }
-
         function loadSong(index) {
             if (typeof myPlaylist === 'undefined' || !myPlaylist[index]) return;
-            stopHLS();
             const song = myPlaylist[index];
             songNameEl.innerText = song.name;
             artistNameEl.innerText = song.artist;
+            audio.pause();
             audio.src = song.audio;
+            audio.load();
             renderPlaylist();
         }
 
-        // Live Radio Engine with HLS support
+        // Direct Stream Radio Handler
         function playRadio(streamUrl, name, artist) {
-            stopHLS();
+            audio.pause();
             songNameEl.innerText = name;
             artistNameEl.innerText = artist;
-
-            if (streamUrl.includes('.m3u8')) {
-                if (Hls.isSupported()) {
-                    hlsPlayer = new Hls();
-                    hlsPlayer.loadSource(streamUrl);
-                    hlsPlayer.attachMedia(audio);
-                    hlsPlayer.on(Hls.Events.MANIFEST_PARSED, function() {
-                        audio.play();
-                    });
-                } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
-                    audio.src = streamUrl;
-                    audio.play();
-                }
-            } else {
-                audio.src = streamUrl;
-                audio.play();
-            }
-
-            playIcon.style.display = 'none';
-            pauseIcon.style.display = 'block';
-            cdDisc.classList.add('playing');
-            isPlaying = true;
+            audio.src = streamUrl;
+            audio.load();
+            audio.play().then(() => {
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+                cdDisc.classList.add('playing');
+                isPlaying = true;
+            }).catch(e => console.log("Play blocked: ", e));
         }
 
         function togglePlay() {
@@ -238,10 +216,11 @@
                 pauseIcon.style.display = 'none';
                 cdDisc.classList.remove('playing');
             } else {
-                audio.play();
-                playIcon.style.display = 'none';
-                pauseIcon.style.display = 'block';
-                cdDisc.classList.add('playing');
+                audio.play().then(() => {
+                    playIcon.style.display = 'none';
+                    pauseIcon.style.display = 'block';
+                    cdDisc.classList.add('playing');
+                });
             }
             isPlaying = !isPlaying;
         }
